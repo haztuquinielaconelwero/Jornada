@@ -890,7 +890,7 @@ if (_partidosLoading) {
 if (ENV?.isDev) console.warn('⚠️ cargarPartidos: ya hay una carga en progreso, ignorando.');
 return false;
 }
-if (AppState.getPartidos().length >= PARTIDOSESPERADOS) {
+if (AppState.getPartidos().length >= PARTIDOS_ESPERADOS) {
 if (ENV?.isDev) console.log(`cargarPartidos: partidos completos en AppState, saltando fetch.`);
 document.dispatchEvent(
 new CustomEvent('partidosCargados', {
