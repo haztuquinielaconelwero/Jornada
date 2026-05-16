@@ -1612,7 +1612,7 @@ async def confirmar_quiniela(quiniela_id: int):
                     )
                     logger.warning(mensaje)
                 else:
-                    lock_key = hash(f"{vendedor}:{jornada}") % (2**31)
+                    lock_key = hash(f"{vendedor}{jornada}") & 0x7FFFFFFF
                     cur.execute("SELECT pg_advisory_xact_lock(%s)", (lock_key,))
                     cur.execute("""
                         SELECT MAX(CAST(folio AS INTEGER)) AS ultimo
