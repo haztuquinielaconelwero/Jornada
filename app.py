@@ -183,6 +183,7 @@ def init_db() -> None:
             """)
 
     logger.info("Base de datos PostgreSQL inicializada correctamente")
+
 # ── ESPN por ligas ────────────────────────────────────────────────────
 LIGAS_ESPN: dict[str, str] = {
     "bundesliga": "ger.1",
@@ -194,9 +195,7 @@ LIGAS_ESPN: dict[str, str] = {
     "premier":    "eng.1",
     "serie_a":    "ita.1",
 }
-
 NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
-
     # ── Liga MX ──────────────────────────────────────────────────────
     "América":     ("América",                  "liga_mx"),
     "Atlas":       ("Atlas",                    "liga_mx"),
@@ -216,8 +215,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Tigres":      ("Tigres UANL",              "liga_mx"),
     "Tijuana":     ("Club Tijuana",             "liga_mx"),
     "Toluca":      ("Toluca",                   "liga_mx"),
-
-    # ── Premier League ───────────────────────────────────────────────
+    # ── Premier League ──────────────────────────────────────────────
     "Arsenal":        ("Arsenal",                  "premier"),
     "Aston Villa":    ("Aston Villa",              "premier"),
     "Brighton":       ("Brighton & Hove Albion",   "premier"),
@@ -234,7 +232,6 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Tottenham":      ("Tottenham Hotspur",        "premier"),
     "West Ham":       ("West Ham United",          "premier"),
     "Wolves":         ("Wolverhampton Wanderers",  "premier"),
-
     # ── La Liga ──────────────────────────────────────────────────────
     "Athletic":    ("Athletic Club",            "la_liga"),
     "Atlético":    ("Atletico de Madrid",       "la_liga"),
@@ -246,14 +243,12 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Sociedad":    ("Real Sociedad",            "la_liga"),
     "Valencia":    ("Valencia",                 "la_liga"),
     "Villarreal":  ("Villarreal",               "la_liga"),
-
     # ── Bundesliga ───────────────────────────────────────────────────
     "Bayern":      ("Bayern Munich",            "bundesliga"),
     "Dortmund":    ("Borussia Dortmund",        "bundesliga"),
     "Frankfurt":   ("Eintracht Frankfurt",      "bundesliga"),
     "Leipzig":     ("RB Leipzig",               "bundesliga"),
     "Leverkusen":  ("Bayer Leverkusen",         "bundesliga"),
-
     # ── Serie A ──────────────────────────────────────────────────────
     "Inter":       ("Inter Milan",              "serie_a"),
     "Juventus":    ("Juventus",                 "serie_a"),
@@ -261,34 +256,25 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Milan":       ("AC Milan",                 "serie_a"),
     "Napoli":      ("Napoli",                   "serie_a"),
     "Roma":        ("AS Roma",                  "serie_a"),
-
     # ── Ligue 1 ──────────────────────────────────────────────────────
     "Marsella":    ("Marseille",                "ligue_1"),
     "Monaco":      ("Monaco",                   "ligue_1"),
     "PSG":         ("Paris Saint-Germain",      "ligue_1"),
-
     # ── Selecciones Nacionales ───────────────────────────────────────
     "Ghana":       ("Ghana",                    "friendlies"),
     "México":      ("Mexico",                   "friendlies"),
 }
-
 def _parsear_eventos_espn(
     data: dict,
     local_lookup: dict[str, int],
     ids_listos: set[int],
 ) -> list[tuple[int, int, int, str]]:
-    """
-    Parsea la respuesta JSON del scoreboard de ESPN.
-    Solo procesa partidos con state == "post" (terminados).
-    Devuelve lista de (partido_id, goles_local, goles_visita, resultado).
-    """
     encontrados = []
     for ev in (data.get("events") or []):
         for comp in (ev.get("competitions") or []):
             state = comp.get("status", {}).get("type", {}).get("state", "")
             if state != "post":
                 continue
-
             home_name = home_score = away_score = None
             for team in (comp.get("competitors") or []):
                 nombre = (team.get("team", {}).get("displayName") or "").lower()
@@ -298,22 +284,17 @@ def _parsear_eventos_espn(
                     home_score = score
                 else:
                     away_score = score
-
             if home_name is None or home_score is None or away_score is None:
                 continue
-
             pid = local_lookup.get(home_name)
             if pid is None or pid not in ids_listos:
                 continue
-
             try:
                 gh, ga = int(home_score), int(away_score)
             except (ValueError, TypeError):
                 continue
-
             res = "L" if gh > ga else ("E" if gh == ga else "V")
             encontrados.append((pid, gh, ga, res))
-
     return encontrados
 
 async def auto_sync_loop() -> None:
@@ -322,11 +303,11 @@ async def auto_sync_loop() -> None:
     - Arranca inmediatamente sin esperar fin_jornada.
     - Consulta solo partidos cuyo kickoff + 105 min ya pasó.
     - No se congela si hay resultados parciales.
-    - Un solo request por liga — ESPN devuelve todos los partidos del día.
+    - Consulta ESPN por fecha exacta del kickoff (?dates=YYYYMMDD)
+      para evitar que el cambio de día en ESPN omita partidos nocturnos.
     """
     await asyncio.sleep(15)
-    logger.info("auto_sync_loop v4 (ESPN) iniciado")
-
+    logger.info("auto_sync_loop v5 (ESPN + dates) iniciado")
     kickoff_por_id: dict[int, datetime] = {}
     for p in PARTIDOS:
         ko_str = p.get("kickoff")
@@ -344,26 +325,29 @@ async def auto_sync_loop() -> None:
                 "auto_sync: kickoff inválido para partido_id=%s — '%s'",
                 p["id"], ko_str,
             )
-    local_lookup:  dict[str, int]       = {}
-    liga_a_ids:    dict[str, list[int]] = {}
+    local_lookup:    dict[str, int]            = {}
+    liga_fecha_ids:  dict[tuple, list[int]]    = {}
 
     for p in PARTIDOS:
-        entry = NOMBRE_A_ESPN.get(p["local"])
+        entry  = NOMBRE_A_ESPN.get(p["local"])
+        ko_str = p.get("kickoff", "")
+        fecha  = ko_str[:10].replace("-", "") if ko_str else ""
+
         if entry:
             espn_nombre, liga_key = entry
             local_lookup[espn_nombre.lower()] = p["id"]
-            liga_a_ids.setdefault(liga_key, []).append(p["id"])
+            if fecha:
+                liga_fecha_ids.setdefault((liga_key, fecha), []).append(p["id"])
         else:
             local_lookup[p["local"].lower()] = p["id"]
             logger.warning(
                 "auto_sync: '%s' no está en NOMBRE_A_ESPN — usando nombre directo",
                 p["local"],
             )
-    ligas_usadas = list(liga_a_ids.keys())
-
+    ligas_usadas = list({k[0] for k in liga_fecha_ids.keys()}) 
     logger.info(
-        "auto_sync: %d partido(s) | ligas=%s",
-        len(PARTIDOS), ligas_usadas,
+        "auto_sync: %d partido(s) | ligas=%s | combinaciones liga+fecha=%s",
+        len(PARTIDOS), ligas_usadas, list(liga_fecha_ids.keys()),
     )
     while True:
         try:
@@ -415,44 +399,45 @@ async def auto_sync_loop() -> None:
                 "auto_sync: %d partido(s) sin resultado de %d terminados — consultando ESPN",
                 len(ids_sin_resultado), len(ids_listos),
             )
-
             actualizados = 0
 
             async with httpx.AsyncClient(timeout=10) as client:
-                for liga_key in ligas_usadas:
+                for (liga_key, fecha), pids in liga_fecha_ids.items():
+
+                    if not any(pid in ids_sin_resultado for pid in pids):
+                        continue
+
                     slug = LIGAS_ESPN.get(liga_key)
                     if not slug:
                         logger.warning(
                             "auto_sync: liga_key '%s' sin slug ESPN — omitiendo", liga_key
                         )
                         continue
-
                     url = (
                         f"https://site.api.espn.com/apis/site/v2/sports/"
-                        f"soccer/{slug}/scoreboard"
+                        f"soccer/{slug}/scoreboard?dates={fecha}"
                     )
-
                     try:
                         resp = await client.get(url)
                     except Exception as exc:
                         logger.warning(
-                            "auto_sync: red error liga=%s — %s", liga_key, exc
+                            "auto_sync: red error liga=%s fecha=%s — %s", liga_key, fecha, exc
                         )
                         await asyncio.sleep(2)
                         continue
-
                     if resp.status_code != 200:
                         logger.warning(
-                            "auto_sync: HTTP %s liga=%s", resp.status_code, liga_key
+                            "auto_sync: HTTP %s liga=%s fecha=%s",
+                            resp.status_code, liga_key, fecha,
                         )
                         continue
-
                     try:
                         data = resp.json()
                     except Exception:
-                        logger.warning("auto_sync: JSON inválido liga=%s", liga_key)
+                        logger.warning(
+                            "auto_sync: JSON inválido liga=%s fecha=%s", liga_key, fecha
+                        )
                         continue
-
                     resultados_batch = _parsear_eventos_espn(
                         data, local_lookup, ids_sin_resultado
                     )
@@ -478,8 +463,8 @@ async def auto_sync_loop() -> None:
                                             )
                                             actualizados += 1
                                             logger.info(
-                                                "auto_sync ✔ partido_id=%s  %s-%s  res=%s  (liga=%s)",
-                                                pid, gh, ga, res, liga_key,
+                                                "auto_sync ✔ partido_id=%s  %s-%s  res=%s  (liga=%s  fecha=%s)",
+                                                pid, gh, ga, res, liga_key, fecha,
                                             )
                                         except Exception as exc:
                                             logger.error(
@@ -487,7 +472,8 @@ async def auto_sync_loop() -> None:
                                             )
                         except Exception as exc:
                             logger.error(
-                                "auto_sync: error guardando batch liga=%s — %s", liga_key, exc
+                                "auto_sync: error guardando batch liga=%s fecha=%s — %s",
+                                liga_key, fecha, exc,
                             )
             if actualizados:
                 logger.info(
