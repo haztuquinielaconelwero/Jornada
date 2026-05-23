@@ -262,7 +262,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "PSG":         ("Paris Saint-Germain",      "ligue_1"),
     # ── Selecciones Nacionales ───────────────────────────────────────
     "Ghana":       ("Ghana",                    "friendlies"),
-    "México":      ("Mexico",                   "friendlies"),
+    "Mexico":      ("Mexico",                   "friendlies"),
 }
 def _parsear_eventos_espn(
     data: dict,
