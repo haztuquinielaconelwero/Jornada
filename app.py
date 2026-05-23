@@ -331,7 +331,11 @@ async def auto_sync_loop() -> None:
     for p in PARTIDOS:
         entry  = NOMBRE_A_ESPN.get(p["local"])
         ko_str = p.get("kickoff", "")
-        fecha  = ko_str[:10].replace("-", "") if ko_str else ""
+        try:
+            ko_utc = datetime.fromisoformat(ko_str).astimezone(timezone.utc)
+            fecha  = ko_utc.strftime("%Y%m%d")
+        except (ValueError, TypeError):
+            fecha = ""
 
         if entry:
             espn_nombre, liga_key = entry
