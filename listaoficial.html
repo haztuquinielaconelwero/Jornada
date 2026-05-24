@@ -188,7 +188,7 @@ Modo en espera activo — Las quinielas confirmadas por el vendedor no entrarán
 </div>
 <div class="selection-bar" id="selectionBar">
 <span class="sel-count" id="selCount">0 seleccionadas</span>
-<button class="btn-sel-delete" onclick="eliminarSeleccionadas()">Eliminar seleccionadas 🗑️</button>
+<button class="btn-sel-delete" onclick="eliminarSeleccionadas()">Archivar seleccionadas 📦</button>
 <button class="btn-sel-clear"  onclick="limpiarSeleccion()">Cancelar ✕</button>
 </div>
 <div class="header">
@@ -201,7 +201,7 @@ Modo en espera activo — Las quinielas confirmadas por el vendedor no entrarán
 <button class="btn btn-azul"    onclick="document.getElementById('fileInput').click()">Importar 📤</button>
 <button class="btn btn-verde"   onclick="descargarPlantilla()">Plantilla 📄</button>
 <button class="btn btn-azul"    onclick="exportarExcel()">Exportar 📥</button>
-<button class="btn btn-rojo" id="btnEliminarTodas" onclick="eliminarTodasLasQuinielas()">Eliminar todas 🗑️</button>
+<button class="btn btn-rojo" id="btnEliminarTodas" onclick="eliminarTodasLasQuinielas()">Archivar todas 📦</button>
 <button class="btn btn-bloquear" id="btnEspera" onclick="toggleBloqueo()">Modo en espera 🔓</button>
 <input type="file" id="fileInput" accept=".csv" onchange="importarCSV(event)">
 </div>

@@ -1466,7 +1466,6 @@ async def obtener_quiniela(quiniela_id: int):
         )
     return {"success": True, "quiniela": _row_to_dict(row)}
 
-
 @app.delete("/api/quinielas/{quiniela_id}")
 async def eliminar_quiniela(quiniela_id: int):
     try:
@@ -1477,19 +1476,34 @@ async def eliminar_quiniela(quiniela_id: int):
                     "SELECT id FROM quinielas WHERE id = %s FOR UPDATE",
                     (quiniela_id,),
                 )
-                if not cur.fetchone():
+                row = cur.fetchone()
+                if not row:
                     raise HTTPException(
                         status_code=404,
                         detail=f"Quiniela con ID {quiniela_id} no encontrada",
                     )
-                cur.execute("DELETE FROM quinielas WHERE id = %s", (quiniela_id,))
+                cur.execute(
+                    """
+                    UPDATE quinielas
+                    SET estado = %s,
+                        folio  = NULL
+                    WHERE id = %s
+                    """,
+                    (ESTADO_ESPERA, quiniela_id),
+                )
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Error eliminando quiniela %s: %s", quiniela_id, e)
-        raise HTTPException(status_code=500, detail="Error interno al eliminar la quiniela")
-    logger.info("Quiniela eliminada: ID %s", quiniela_id)
-    return {"success": True, "mensaje": f"Quiniela {quiniela_id} eliminada correctamente"}
+        logger.error("Error archivando quiniela %s: %s", quiniela_id, e)
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al archivar la quiniela",
+        )
+    logger.info("Quiniela archivada (no borrada): ID %s", quiniela_id)
+    return {
+        "success": True,
+        "mensaje": f"Quiniela {quiniela_id} archivada (registro conservado)",
+    }
 
 class ActualizarQuinielaInput(BaseModel):
     estado: Optional[str] = None
@@ -2027,19 +2041,27 @@ async def eliminar_quinielas_bulk(body: dict):
         with get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "DELETE FROM quinielas WHERE jornada = %s AND estado = 'jugando'",
-                    (jornada,)
+                    """
+                    UPDATE quinielas
+                    SET estado = %s,
+                        folio  = NULL
+                    WHERE jornada = %s
+                      AND estado  = %s
+                    """,
+                    (ESTADO_ESPERA, jornada, ESTADO_JUGANDO),
                 )
                 return cur.rowcount
-
     try:
-        eliminadas = await asyncio.to_thread(_ejecutar)
+        archivadas = await asyncio.to_thread(_ejecutar)
     except Exception as e:
-        logger.error("Error bulk delete jornada '%s': %s", jornada, e)
-        raise HTTPException(status_code=500, detail="Error al eliminar")
-
-    logger.warning("🗑️ Bulk delete — jornada='%s' | eliminadas=%s", jornada, eliminadas)
-    return {"success": True, "eliminadas": eliminadas}
+        logger.error("Error bulk archive jornada '%s': %s", jornada, e)
+        raise HTTPException(status_code=500, detail="Error al archivar")
+    logger.warning("🗃️ Bulk archive — jornada='%s' | archivadas=%s", jornada, archivadas)
+    return {
+        "success":    True,
+        "archivadas": archivadas,
+        "eliminadas": archivadas,
+    }
 
 @app.get("/lista")
 async def get_lista():
@@ -2242,7 +2264,6 @@ async def importar_quinielas_csv(
         "errores":      errores,
     }
 
-
 @app.get("/api/plantilla-importar")
 async def descargar_plantilla_importar():
     csv_content = "\n".join([
@@ -2260,87 +2281,6 @@ async def descargar_plantilla_importar():
             "Content-Length": str(len(csv_content.encode("utf-8"))),
         },
     )
-# ║     ⚽ Esto de abajo trabaja en la eliminacion de todo   ║ # ║     ⚽ Esto de abajo trabaja en la eliminacion de todo   ║
-class EliminarTodasInput(BaseModel):
-    jornada:      str = Field(..., min_length=1, max_length=50)
-    confirm_text: str = Field(..., min_length=1, max_length=100)
-
-    @field_validator("jornada")
-    @classmethod
-    def validar_jornada(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("La jornada no puede estar vacía")
-        return v
-
-    @model_validator(mode="after")
-    def validar_confirmacion(self) -> "EliminarTodasInput":
-        esperado = f"ELIMINAR {self.jornada}"
-        if self.confirm_text != esperado:
-            raise ValueError(
-                f"Texto de confirmación incorrecto. "
-                f"Debes escribir exactamente: '{esperado}'"
-            )
-        return self
-
-@app.delete("/api/eliminar-todas")
-async def eliminar_todas_las_quinielas(
-    body: EliminarTodasInput,
-):
-    jornada = body.jornada
-
-    def _ejecutar_eliminacion() -> tuple[int, int, dict]:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SET LOCAL lock_timeout = '5s'")
-                cur.execute("""
-                    SELECT estado, COUNT(*) AS total
-                    FROM quinielas
-                    WHERE jornada = %s
-                    GROUP BY estado
-                """, (jornada,))
-                snapshot = {row["estado"]: row["total"] for row in cur.fetchall()}
-                cur.execute(
-                    "DELETE FROM resultados WHERE jornada = %s",
-                    (jornada,),
-                )
-                resultados_borrados = cur.rowcount
-                cur.execute(
-                    "DELETE FROM quinielas WHERE jornada = %s",
-                    (jornada,),
-                )
-                eliminadas = cur.rowcount
-                cur.execute("ALTER SEQUENCE quinielas_id_seq RESTART WITH 1")
-        return eliminadas, resultados_borrados, snapshot
-
-    try:
-        eliminadas, resultados_borrados, snapshot = await asyncio.to_thread(
-            _ejecutar_eliminacion
-        )
-    except Exception as e:
-        logger.error("Error eliminando jornada '%s': %s", jornada, e)
-        raise HTTPException(
-            status_code=500,
-            detail="Error interno al eliminar la jornada",
-        )
-
-    logger.warning(
-        "🗑️ ELIMINACIÓN TOTAL — jornada='%s' | "
-        "quinielas=%s resultados=%s | snapshot=%s",
-        jornada, eliminadas, resultados_borrados, snapshot,
-    )
-    return {
-        "success":             True,
-        "mensaje":             (
-            f"{eliminadas} quinielas y {resultados_borrados} resultados "
-            f"eliminados de {jornada}"
-        ),
-        "eliminadas":          eliminadas,
-        "resultados_borrados": resultados_borrados,
-        "jornada":             jornada,
-        "snapshot_previo":     snapshot,
-    }
-
 # ║     ⚽ Esto de abajo trabaja en las rutas de la aplicacion  ║ # ║     ⚽ Esto de abajo trabaja en las rutas de la aplicacion  ║
 @app.get("/manifest.json")
 async def get_manifest():
@@ -2420,45 +2360,6 @@ async def diagnostico(
         logger.error("Error en diagnóstico: %s", e)
         raise HTTPException(500, detail="Error interno al ejecutar el diagnóstico")
     return resultado
-
-@app.delete("/admin/limpiar-duplicados")
-async def limpiar_duplicados(
-    jornada: str = Query(default=JORNADA_ACTUAL),
-):
-    rangos_reservados = LIMITES_VENDEDORES.get("_reservado", [])
-    folios_reservados: list[str] = []
-    for ini, fin in rangos_reservados:
-        folios_reservados.extend(str(f) for f in range(ini, fin + 1))
-    if not folios_reservados:
-        return {
-            "success": True,
-            "borrados": 0,
-            "mensaje":  "No hay folios reservados configurados",
-        }
-    def _eliminar() -> int:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SET LOCAL lock_timeout = '3s'")
-                cur.execute("""
-                    DELETE FROM quinielas
-                    WHERE vendedor = '_reservado'
-                      AND folio    = ANY(%s)
-                      AND jornada  = %s
-                """, (folios_reservados, jornada))
-                return cur.rowcount
-    try:
-        borrados = await asyncio.to_thread(_eliminar)
-    except Exception as e:
-        logger.error("Error limpiando duplicados en %s: %s", jornada, e)
-        raise HTTPException(500, detail="Error interno al limpiar duplicados")
-    logger.info("Duplicados limpiados — jornada=%s borrados=%s", jornada, borrados)
-    return {
-        "success":  True,
-        "borrados": borrados,
-        "jornada":  jornada,
-        "mensaje":  f"{borrados} registros reservados eliminados de {jornada}",
-    }
-
 # ║     ⚽ Esto de abajo trabaja en la iniciacion del servidor   ║# ║     ⚽ Esto de abajo trabaja en la iniciacion del servidor   ║
 LOGGING_CONFIG = {
     "version":    1,
