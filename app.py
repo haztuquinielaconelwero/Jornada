@@ -614,7 +614,7 @@ PARTIDOS = [
         "visitante": "Sudafrica",    "visitanteLogo": "/logos/sudafrica.png",
         "horario": "Jueves 11 junio 1 pm",
         "televisora": "Canal 5 / TUDN / Azteca / ViX",
-        "televisionLogo": "/logos/canal-5.png" "/logos/vix.png",
+        "televisionLogo": "/logos/canal-5.png",
         "kickoff": "2026-06-11T13:00:00-06:00",
     },
     {
