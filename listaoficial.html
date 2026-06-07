@@ -220,7 +220,7 @@ Modo en espera activo — Las quinielas confirmadas por el vendedor no entrarán
 <div class="resultados-grid" id="resultadosGrid"></div>
 <div class="resultados-acciones">
 <button class="btn btn-success btn-guardar" id="btnGuardar" onclick="guardarResultados()">Guardar resultados 💾</button>
-<button class="btn btn-rojo   btn-limpiar" id="btnLimpiar" onclick="limpiarResultados()">Limpiar resultados 🗑️</button>
+<button class="btn btn-rojo   btn-limpiar" id="btnLimpiar" onclick="limpiarResultados()">Borrar resultados 🗑️</button>
 </div>
 </div>
 <div class="grid-wrapper">
@@ -710,7 +710,7 @@ toast('Resultados limpiados correctamente', 'success');
 }
 async function eliminarQuiniela(folio) {
 if (!folio) return;
-if (!confirm(`Eliminar la quiniela con folio ${folio}?`)) return;
+if (!confirm(`¿Archivar la quiniela con folio ${folio}? Pasará al estado "Espera". 📦`)) return;
 const quiniela = state.datosOriginales.find(q => String(q.folio) === String(folio));
 if (!quiniela) { toast('No se encontró la quiniela', 'error'); return; }
 await conGuard(async () => {
@@ -725,14 +725,14 @@ state.rowDataCache = null;
 procesarDatos();
 renderTabla();
 actualizarEstadisticas();
-toast(`Folio ${folio} eliminado`, 'success');
+toast(`Folio ${folio} archivado correctamente 📦`, 'success');
 });
 }
 async function eliminarSeleccionadas() {
 if (!gridApi) return;
 const seleccionadas = gridApi.getSelectedRows().filter(r => r.folio);
 if (!seleccionadas.length) { toast('No hay quinielas seleccionadas', 'warn'); return; }
-if (!confirm(`¿Eliminar ${seleccionadas.length} quiniela${seleccionadas.length > 1 ? 's' : ''}? Esta acción no se puede deshacer.`)) return;
+if (!confirm(`¿Archivar ${seleccionadas.length} quiniela${seleccionadas.length > 1 ? 's' : ''}? Pasarán al estado "Espera". 📦`)) return;
 await conGuard(async () => {
 mostrarLoading(true);
 const targets = seleccionadas.map(row => {
@@ -753,17 +753,17 @@ state.rowDataCache = null;
 await cargarDatos();
 limpiarSeleccion();
 if (fallos === 0) {
-toast(`${ok} quiniela${ok > 1 ? 's' : ''} eliminada${ok > 1 ? 's' : ''} correctamente`, 'success');
+toast(`${ok} quiniela${ok > 1 ? 's' : ''} archivada${ok > 1 ? 's' : ''} correctamente 📦`, 'success');
 } else {
-toast(`${ok} eliminadas, ${fallos} con error. Ver consola.`, 'warn');
+toast(`${ok} archivadas, ${fallos} con error. Ver consola.`, 'warn');
 }
 }, []);
 }
 async function eliminarTodasLasQuinielas() {
 const targets = state.datosOriginales.filter(q => q.id);
 if (!targets.length) { toast('No hay quinielas en la lista para eliminar', 'warn'); return; }
-if (!confirm(`¿Eliminar las ${targets.length} quinielas de la lista actual? Las quinielas en espera o pendientes no se eliminarán. ⚠️`)) return;
-if (!confirm(`Última confirmación: ¿Eliminar ${targets.length} quinielas jugando? 🚨`)) return;
+if (!confirm(`¿Archivar las ${targets.length} quinielas de la lista actual? Pasarán al estado "Espera". ⚠️`)) return;
+if (!confirm(`Última confirmación: ¿Archivar ${targets.length} quinielas jugando? Esta acción es reversible. 📦`)) return;
 await conGuard(async () => {
 mostrarLoading(true);
 const res  = await fetch(`${API_BASE}/api/quinielas-bulk-delete`, {
@@ -772,12 +772,12 @@ headers: getAuthHeaders(),
 body:    JSON.stringify({ jornada: state.jornada }),
 });
 const data = await res.json();
-if (!res.ok || !data.success) throw new Error(data.mensaje || 'Error al eliminar');
-const okTotal = data.eliminadas ?? targets.length;
+if (!res.ok || !data.success) throw new Error(data.mensaje || 'Error al archivar');
+const okTotal = data.archivadas ?? data.eliminadas ?? targets.length;
 state.rowDataCache = null;
 await cargarDatos();
 limpiarSeleccion();
-toast(`${okTotal} quiniela${okTotal !== 1 ? 's' : ''} eliminada${okTotal !== 1 ? 's' : ''} de la lista ✅`, 'success');
+toast(`${okTotal} quiniela${okTotal !== 1 ? 's' : ''} archivada${okTotal !== 1 ? 's' : ''} — ya no aparecen en Jugando 📦`, 'success');
 }, ['btnEliminarTodas']);
 }
 function actualizarUIBloqueo() {

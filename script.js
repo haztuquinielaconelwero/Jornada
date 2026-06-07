@@ -65,13 +65,12 @@ try { localStorage.removeItem(key); } catch { /* sin acceso */ }
 /*-------------------------Esto de abajo se encarga de trabajar en nuestro archivo y se enfoca en la identificacion del vendedor-------------------------------------*/
 const VendedorManager = (() => {
 const VENDEDORES_VALIDOS = new Set([
-'Alexander', 'Alfonso', 'Arturo', 'Azael', 'Boosters', 'Checo',
-'Choneke', 'Dani', 'Del Angel', 'El Leona', 'El Piojo', 'Energeticos',
-'Enoc', 'Ever', 'Fer', 'Figueroa', 'Gera', 'GioSoto', 'Guerrero',
-'Javier Garcia', 'JJ', 'Jose Luis', 'Juan de Dios', 'Juanillo',
-'Kany', 'Manu', 'Marchan', 'Marcos', 'Mazatan', 'Memo', 'Pantoja',
+'Alexander', 'Alfonso', 'Azael', 'Boosters', 'Checo',
+'Choneke', 'Dani', 'Del Angel', 'El Piojo',
+'Fer', 'Figueroa', 'Gera', 'Guerrero',
+'Manu', 'Marchan', 'Mazatan', 'Pantoja',
 'Patty', 'Piny', 'PolloGol', 'Ranita', 'Rolando', 'Taliban', 'Tienda',
-'Vender 1', 'Rifa', 'Dinamica Final', '•',
+'Vender 1', 'Rifa', 'Dinamica', '•',
 ]);
 const STORAGE_KEY = 'vendedor';
 const MAX_LENGTH = 20;

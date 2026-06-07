@@ -188,12 +188,12 @@ def init_db() -> None:
 LIGAS_ESPN: dict[str, str] = {
     "bundesliga": "ger.1",
     "champions":  "uefa.champions",
-    "friendlies": "fifa.friendly",
     "la_liga":    "esp.1",
     "liga_mx":    "mex.1",
     "ligue_1":    "fra.1",
     "premier":    "eng.1",
     "serie_a":    "ita.1",
+    "mundial":    "fifa.world",
 }
 NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     # ── Liga MX ──────────────────────────────────────────────────────
@@ -220,7 +220,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Aston Villa":    ("Aston Villa",              "premier"),
     "Brighton":       ("Brighton & Hove Albion",   "premier"),
     "Chelsea":        ("Chelsea",                  "premier"),
-    "Crystal": ("Crystal Palace",           "premier"),
+    "Crystal":        ("Crystal Palace",           "premier"),
     "Everton":        ("Everton",                  "premier"),
     "Fulham":         ("Fulham",                   "premier"),
     "Leeds":          ("Leeds United",             "premier"),
@@ -261,8 +261,37 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Monaco":      ("Monaco",                   "ligue_1"),
     "PSG":         ("Paris Saint-Germain",      "ligue_1"),
     # ── Selecciones Nacionales ───────────────────────────────────────
-    "Ghana":       ("Ghana",                    "friendlies"),
-    "Mexico":      ("Mexico",                   "friendlies"),
+    "Alemania":      ("Germany",                "mundial"),
+    "Arabia":        ("Saudi Arabia",           "mundial"),
+    "Australia":     ("Australia",              "mundial"),
+    "Belgica":       ("Belgium",                "mundial"),
+    "Brasil":        ("Brazil",                 "mundial"),
+    "Cabo Verde":    ("Cape Verde",             "mundial"),
+    "Chequia":       ("Czechia",                "mundial"),
+    "Colombia":      ("Colombia",               "mundial"),
+    "Corea Sur":     ("South Korea",            "mundial"),
+    "Costa Marfil":  ("Ivory Coast",            "mundial"),
+    "Croacia":       ("Croatia",                "mundial"),
+    "Curazao":       ("Curacao",                "mundial"),
+    "Ecuador":       ("Ecuador",                "mundial"),
+    "Escocia":       ("Scotland",               "mundial"),
+    "España":        ("Spain",                  "mundial"),
+    "Eua":           ("United States",          "mundial"),
+    "Francia":       ("France",                 "mundial"),
+    "Ghana":         ("Ghana",                  "mundial"),
+    "Iran":          ("Iran",                   "mundial"),
+    "Japon":         ("Japan",                  "mundial"),
+    "Marruecos":     ("Morocco",                "mundial"),
+    "Mexico":        ("Mexico",                 "mundial"),
+    "Noruega":       ("Norway",                 "mundial"),
+    "Paises Bajos":  ("Netherlands",            "mundial"),
+    "Paraguay":      ("Paraguay",               "mundial"),
+    "Portugal":      ("Portugal",               "mundial"),
+    "Sudafrica":     ("South Africa",           "mundial"),
+    "Suecia":        ("Sweden",                 "mundial"),
+    "Tunez":         ("Tunisia",                "mundial"),
+    "Turquia":       ("Turkey",                 "mundial"),
+    "Uruguay":       ("Uruguay",                "mundial"),
 }
 def _parsear_eventos_espn(
     data: dict,
@@ -298,14 +327,6 @@ def _parsear_eventos_espn(
     return encontrados
 
 async def auto_sync_loop() -> None:
-    """
-    Sincroniza resultados automáticamente cada 10 min usando ESPN.
-    - Arranca inmediatamente sin esperar fin_jornada.
-    - Consulta solo partidos cuyo kickoff + 105 min ya pasó.
-    - No se congela si hay resultados parciales.
-    - Consulta ESPN por fecha exacta del kickoff (?dates=YYYYMMDD)
-      para evitar que el cambio de día en ESPN omita partidos nocturnos.
-    """
     await asyncio.sleep(15)
     logger.info("auto_sync_loop v5 (ESPN + dates) iniciado")
     kickoff_por_id: dict[int, datetime] = {}
@@ -554,7 +575,7 @@ app.add_middleware(
     max_age=3600,
 )
 # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║
-JORNADA_ACTUAL     = "Final 1"
+JORNADA_ACTUAL     = "Mundial 1"
 MAX_DOBLES         = 4
 MAX_TRIPLES        = 3
 PRECIO_NORMAL      = 30
@@ -569,13 +590,12 @@ if PRECIO_DESCUENTO >= PRECIO_NORMAL:
 
 JORNADA_CONFIG = {
     "numero":       1,
-    "nombre":       "Final 1",
-    "codigo_grupo": "F1",
-    "link_grupo":   "https://chat.whatsapp.com/DRegXApHVZY0JF4vwb796y",
-    "inicio":       "2026-05-19T15:00:00-06:00",
-    "fin":          "2026-05-24T22:00:00-06:00",
+    "nombre":       "Mundial 1",
+    "codigo_grupo": "M1",
+    "link_grupo":   "https://chat.whatsapp.com/GqOaoBoIsDABoe98c6g0qg",
+    "inicio":       "2026-06-11T13:00:00-06:00",  
+    "fin":          "2026-06-14T22:00:00-06:00",   
 }
-
 
 _inicio_dt = datetime.fromisoformat(JORNADA_CONFIG["inicio"])
 _fin_dt    = datetime.fromisoformat(JORNADA_CONFIG["fin"])
@@ -590,84 +610,84 @@ JORNADA_CONFIG["findt"]    = _fin_dt
 PARTIDOS = [
     {
         "id": 0,
-        "local": "Cruz Azul",        "localLogo": "/logos/cruz-azul.png",
-        "visitante": "Pumas",        "visitanteLogo": "/logos/pumas.png",
-        "horario": "Jueves 21 mayo 8 pm",
-        "televisora": "Canal 5 / TUDN / ViX",
-        "televisionLogo": "/logos/tudn.png",
-        "kickoff": "2026-05-21T20:00:00-06:00",
+        "local": "Mexico",           "localLogo": "/logos/mexico.png",
+        "visitante": "Sudafrica",    "visitanteLogo": "/logos/sudafrica.png",
+        "horario": "Jueves 11 junio 1 pm",
+        "televisora": "Canal 5 / TUDN / Azteca / ViX",
+        "televisionLogo": "/logos/canal-5.png" "/logos/vix.png",
+        "kickoff": "2026-06-11T13:00:00-06:00",
     },
     {
         "id": 1,
-        "local": "Mexico",           "localLogo": "/logos/mexico.png",
-        "visitante": "Ghana",        "visitanteLogo": "/logos/ghana.png",
-        "horario": "Viernes 22 mayo 8 pm",
-        "televisora": "Canal 5 / Azteca 7",
-        "televisionLogo": "/logos/canal-5.png",
-        "kickoff": "2026-05-22T20:00:00-06:00",
+        "local": "Corea Sur",        "localLogo": "/logos/corea-del-sur.png",
+        "visitante": "Chequia",      "visitanteLogo": "/logos/chequia.png",
+        "horario": "Jueves 11 junio 8 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-11T20:00:00-06:00",
     },
     {
         "id": 2,
-        "local": "Real M",           "localLogo": "/logos/real-madrid.png",
-        "visitante": "Athletic",     "visitanteLogo": "/logos/athletic.png",
-        "horario": "Sábado 23 mayo 1 pm",
-        "televisora": "Sky Sports",
-        "televisionLogo": "/logos/sky-sports.png",
-        "kickoff": "2026-05-23T13:00:00-06:00",
+        "local": "Eua",              "localLogo": "/logos/eua.png",
+        "visitante": "Paraguay",     "visitanteLogo": "/logos/paraguay.png",
+        "horario": "Viernes 12 junio 7 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-12T19:00:00-06:00",
     },
     {
         "id": 3,
-        "local": "Valencia",         "localLogo": "/logos/valencia.png",
-        "visitante": "Barcelona",    "visitanteLogo": "/logos/barcelona.png",
-        "horario": "Sábado 23 mayo 1 pm",
-        "televisora": "ESPN",
-        "televisionLogo": "/logos/espn.png",
-        "kickoff": "2026-05-23T13:00:00-06:00",
+        "local": "Brasil",           "localLogo": "/logos/brasil.png",
+        "visitante": "Marruecos",    "visitanteLogo": "/logos/marruecos.png",
+        "horario": "Sábado 13 junio 4 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-13T16:00:00-06:00",
     },
     {
         "id": 4,
-        "local": "Crystal",          "localLogo": "/logos/crystal.png",
-        "visitante": "Arsenal",      "visitanteLogo": "/logos/arsenal.png",
-        "horario": "Domingo 24 mayo 9 am",
-        "televisora": "TNT Sports",
-        "televisionLogo": "/logos/tnt-sports.png",
-        "kickoff": "2026-05-24T09:00:00-06:00",
+        "local": "Australia",        "localLogo": "/logos/australia.png",
+        "visitante": "Turquia",      "visitanteLogo": "/logos/turquia.png",
+        "horario": "Sábado 13 junio 10 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-13T22:00:00-06:00",
     },
     {
         "id": 5,
-        "local": "Man City",         "localLogo": "/logos/man-city.png",
-        "visitante": "Aston Villa",  "visitanteLogo": "/logos/aston-villa.png",
-        "horario": "Domingo 24 mayo 9 am",
-        "televisora": "TNT Sports",
-        "televisionLogo": "/logos/tnt-sports.png",
-        "kickoff": "2026-05-24T09:00:00-06:00",
+        "local": "Alemania",         "localLogo": "/logos/alemania.png",
+        "visitante": "Curazao",      "visitanteLogo": "/logos/curazao.png",
+        "horario": "Domingo 14 junio 11 am",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-14T11:00:00-06:00",
     },
     {
         "id": 6,
-        "local": "Tottenham",        "localLogo": "/logos/tottenham.png",
-        "visitante": "Everton",      "visitanteLogo": "/logos/everton.png",
-        "horario": "Domingo 24 mayo 9 am",
-        "televisora": "TNT Sports",
-        "televisionLogo": "/logos/tnt-sports.png",
-        "kickoff": "2026-05-24T09:00:00-06:00",
+        "local": "Paises Bajos",     "localLogo": "/logos/paises-bajos.png",
+        "visitante": "Japon",        "visitanteLogo": "/logos/japon.png",
+        "horario": "Domingo 14 junio 2 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-14T14:00:00-06:00",
     },
     {
         "id": 7,
-        "local": "West Ham",         "localLogo": "/logos/west-ham.png",
-        "visitante": "Leeds",        "visitanteLogo": "/logos/leeds.png",
-        "horario": "Domingo 24 mayo 9 am",
-        "televisora": "TNT Sports",
-        "televisionLogo": "/logos/tnt-sports.png",
-        "kickoff": "2026-05-24T09:00:00-06:00",
+        "local": "Costa Marfil",     "localLogo": "/logos/costa-de-marfil.png",
+        "visitante": "Ecuador",      "visitanteLogo": "/logos/ecuador.png",
+        "horario": "Domingo 14 junio 5 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-14T17:00:00-06:00",
     },
     {
         "id": 8,
-        "local": "Pumas",            "localLogo": "/logos/pumas.png",
-        "visitante": "Cruz Azul",    "visitanteLogo": "/logos/cruz-azul.png",
-        "horario": "Domingo 24 mayo 7 pm",
-        "televisora": "Canal 5 / TUDN / ViX",
-        "televisionLogo": "/logos/tudn.png",
-        "kickoff": "2026-05-24T19:00:00-06:00",
+        "local": "Suecia",           "localLogo": "/logos/suecia.png",
+        "visitante": "Tunez",        "visitanteLogo": "/logos/tunez.png",
+        "horario": "Domingo 14 junio 8 pm",
+        "televisora": "ViX",
+        "televisionLogo": "/logos/vix.png",
+        "kickoff": "2026-06-14T20:00:00-06:00",
     },
 ]
 _total_especiales = MAX_DOBLES + MAX_TRIPLES
@@ -837,7 +857,7 @@ async def actualizar_resultado_oficial(
 
 class GuardarResultadosBody(BaseModel):
     resultados: dict[str, str]
-    marcadores: dict[str, dict] = {}   # {"0": {"local": "2", "visita": "1"}, ...}
+    marcadores: dict[str, dict] = {}   
 
 @app.post("/api/guardar-resultados")
 async def guardar_todos_los_resultados(
@@ -943,48 +963,32 @@ async def borrar_todos_los_resultados(
 
 # ║     ⚽ Esto de abajo trabaja en los limites por vendedor⚽       ║ # ║     ⚽ Esto de abajo trabaja en los limites por vendedor⚽       ║
 LIMITES_VENDEDORES = {
-    "Dinamica Final": (1,    40),
-    "Boosters":       (51,   100),
-    "•":              (96,   100),
+    "Alfonso":        (1,    60),
+    "•":              (61,   70),
+    "Choneke":        (71,   100),
     "Rifa":           (101,  200),
-    "Alexander":      (201,  290),
-    "Vender 1":       (301,  350),
-    "Alfonso":        (351,  420),
-    "Arturo":         (426,  450),
-    "Dani":           (451,  495),
+    "Azael":          (201,  250),
+    "Checo":          (251,  390),
+    "Dani":           (401,  450),
+    "El Piojo":       (451 , 490),
     "Taliban":        (501,  720),
-    "Enoc":           (726,  750),
-    "Azael":          (751,  820),
-    "Guerrero":       (826,  850),
-    "Del Angel":      (851,  900),
-    "Energeticos":    (901,  960),
-    "Choneke":        (966,  1000),
-    "Patty":          (1001, 1500),
-    "El Piojo":       (1501, 1550),
-    "Pantoja":        (1551, 1600),
-    "Checo":          (1601, 1765),
-    "Kany":           (1771, 1800),
-    "Figueroa":       (1801, 1860),
-    "JJ":             (1866, 1900),
-    "GioSoto":        (1901, 2000),
-    "Rolando":        (2001, 2150),
-    "Fer":            (2151, 2210),
-    "Ever":           (2221, 2250),
-    "Gera":           (2251, 2300),
-    "Javier Garcia":  (2301, 2340),
-    "Ranita":         (2351, 2410),
-    "Jose Luis":      (2416, 2450),
-    "El Leona":       (2451, 2470),
-    "Juan de Dios":   (2476, 2500),
-    "Memo":           (2501, 2610),
-    "PolloGol":       (2621, 2650),
-    "Manu":           (2651, 2715),
-    "Juanillo":       (2721, 2750),
-    "Marchan":        (2751, 2780),
-    "Marcos":         (2786, 2815),
-    "Mazatan":        (2820, 2850),
-    "Piny":           (2851, 2855),
-    "Tienda":         (2856, 2860),
+    "Guerrero":       (726,  750),
+    "Fer":            (751,  790),
+    "Figueroa":       (801,  850),
+    "Del Angel":      (851,  910),
+    "PolloGol":       (916 , 950),
+    "Marchan":        (951,  990),
+    "Patty":          (1001, 1400),
+    "Manu":           (1401, 1460),
+    "Pantoja":        (1471, 1500),
+    "Rolando":        (1501, 1640),
+    "Ranita":         (1651, 1710),
+    "Gera":           (1716, 1750),
+    "Mazatan":        (1751, 1780),
+    "Tienda":         (1781, 1785),
+    "Piny":           (1786, 1790),
+    "Dinamica":       (1791, 1800),
+    "Vender 1":       (1801, 1850),
 }
 
 def vendedor_es_valido(vendedor: str) -> bool:
