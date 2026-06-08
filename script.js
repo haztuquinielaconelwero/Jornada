@@ -65,7 +65,7 @@ try { localStorage.removeItem(key); } catch { /* sin acceso */ }
 /*-------------------------Esto de abajo se encarga de trabajar en nuestro archivo y se enfoca en la identificacion del vendedor-------------------------------------*/
 const VendedorManager = (() => {
 const VENDEDORES_VALIDOS = new Set([
-'Alexander', 'Alfonso', 'Azael', 'Boosters', 'Checo',
+'Alfonso', 'Azael', 'Boosters', 'Checo',
 'Choneke', 'Dani', 'Del Angel', 'El Piojo',
 'Fer', 'Figueroa', 'Gera', 'Guerrero',
 'Manu', 'Marchan', 'Mazatan', 'Pantoja',
