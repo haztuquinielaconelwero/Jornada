@@ -66,8 +66,8 @@ try { localStorage.removeItem(key); } catch { /* sin acceso */ }
 const VendedorManager = (() => {
 const VENDEDORES_VALIDOS = new Set([
 'Alexander', 'Alfonso', 'Azael', 'Boosters', 'Checo',
-'Choneke', 'Dani', 'Del Angel', 'El Piojo',
-'Fer', 'Figueroa', 'Gera', 'GioSoto' , 'Guerrero', 'Juanillo',
+'Choneke', 'Dani', 'Del Angel', 'El Piojo', 'Energeticos',
+'Fer', 'Figueroa', 'Gera', 'GioSoto' , 'Guerrero', 'Jose Luis', 'Juanillo',
 'Manu', 'Marchan', 'Mazatan', 'Pantoja',
 'Patty', 'Piny', 'PolloGol', 'Ranita', 'Rolando', 'Taliban', 'Tienda',
 'Vender 1', 'Rifa', 'Dinamica', '•',
