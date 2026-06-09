@@ -987,10 +987,12 @@ LIMITES_VENDEDORES = {
     "Mazatan":        (1751, 1785),
     "Boosters":       (1801, 1835),
     "Alexander":      (1851, 1940),
-    "Tienda":         (1951, 1955),
-    "Piny":           (1956, 1960),
-    "Dinamica":       (1961, 1965),
-    "Vender 1":       (1966, 2015),
+    "GioSoto":        (1951, 2010),
+    "Juanillo":       (2021, 2050),
+    "Tienda":         (2051, 2055),
+    "Piny":           (2056, 2060),
+    "Dinamica":       (2061, 2065),
+    "Vender 1":       (2066, 2115),
 }
 
 def vendedor_es_valido(vendedor: str) -> bool:

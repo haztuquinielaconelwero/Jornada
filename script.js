@@ -67,7 +67,7 @@ const VendedorManager = (() => {
 const VENDEDORES_VALIDOS = new Set([
 'Alexander', 'Alfonso', 'Azael', 'Boosters', 'Checo',
 'Choneke', 'Dani', 'Del Angel', 'El Piojo',
-'Fer', 'Figueroa', 'Gera', 'Guerrero',
+'Fer', 'Figueroa', 'Gera', 'GioSoto' , 'Guerrero', 'Juanillo',
 'Manu', 'Marchan', 'Mazatan', 'Pantoja',
 'Patty', 'Piny', 'PolloGol', 'Ranita', 'Rolando', 'Taliban', 'Tienda',
 'Vender 1', 'Rifa', 'Dinamica', '•',
