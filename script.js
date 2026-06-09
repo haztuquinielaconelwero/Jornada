@@ -68,7 +68,7 @@ const VENDEDORES_VALIDOS = new Set([
 'Alexander', 'Alfonso', 'Azael', 'Boosters', 'Checo',
 'Choneke', 'Dani', 'Del Angel', 'El Piojo', 'Energeticos',
 'Fer', 'Figueroa', 'Gera', 'GioSoto' , 'Guerrero', 'Jose Luis', 'Juanillo',
-'Manu', 'Marchan', 'Mazatan', 'Pantoja',
+'Manu', 'Marchan', 'Mazatan', 'Memo', 'Pantoja',
 'Patty', 'Piny', 'PolloGol', 'Ranita', 'Rolando', 'Taliban', 'Tienda',
 'Vender 1', 'Rifa', 'Dinamica', '•',
 ]);

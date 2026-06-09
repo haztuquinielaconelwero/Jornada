@@ -991,10 +991,11 @@ LIMITES_VENDEDORES = {
     "Juanillo":       (2021, 2050),
     "Energeticos":    (2051, 2110),
     "Jose Luis":      (2116, 2150),
-    "Tienda":         (2151, 2155),
-    "Piny":           (2156, 2160),
-    "Dinamica":       (2161, 2165),
-    "Vender 1":       (2166, 2215),
+    "Memo":           (2151, 2240),
+    "Tienda":         (2251, 2255),
+    "Piny":           (2256, 2260),
+    "Dinamica":       (2261, 2265),
+    "Vender 1":       (2266, 2315),
 }
 
 def vendedor_es_valido(vendedor: str) -> bool:
