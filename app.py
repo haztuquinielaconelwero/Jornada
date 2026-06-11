@@ -997,6 +997,7 @@ LIMITES_VENDEDORES = {
     "Dinamica":       (2261, 2265),
     "Vender 1":       (2266, 2315),
     "Kany":           (2401, 2430),
+    "Ever":           (2451, 2480),
 }
 
 def vendedor_es_valido(vendedor: str) -> bool:
