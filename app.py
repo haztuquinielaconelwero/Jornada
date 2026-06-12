@@ -326,9 +326,11 @@ def _parsear_eventos_espn(
             encontrados.append((pid, gh, ga, res))
     return encontrados
 
+
 async def auto_sync_loop() -> None:
     await asyncio.sleep(15)
     logger.info("auto_sync_loop v5 (ESPN + dates) iniciado")
+
     kickoff_por_id: dict[int, datetime] = {}
     for p in PARTIDOS:
         ko_str = p.get("kickoff")
@@ -346,34 +348,36 @@ async def auto_sync_loop() -> None:
                 "auto_sync: kickoff inválido para partido_id=%s — '%s'",
                 p["id"], ko_str,
             )
-    local_lookup:    dict[str, int]            = {}
-    liga_fecha_ids:  dict[tuple, list[int]]    = {}
+
+    local_lookup:   dict[str, int]         = {}
+    liga_fecha_ids: dict[tuple, list[int]] = {}
 
     for p in PARTIDOS:
-        entry  = NOMBRE_A_ESPN.get(p["local"])
-        ko_str = p.get("kickoff", "")
-        try:
-            ko_utc = datetime.fromisoformat(ko_str).astimezone(timezone.utc)
-            fecha  = ko_utc.strftime("%Y%m%d")
-        except (ValueError, TypeError):
-            fecha = ""
+        pid   = p["id"]
+        entry = NOMBRE_A_ESPN.get(p["local"])
+
+        if pid not in kickoff_por_id:
+            continue
+
+        fecha = kickoff_por_id[pid].strftime("%Y%m%d")
 
         if entry:
             espn_nombre, liga_key = entry
-            local_lookup[espn_nombre.lower()] = p["id"]
-            if fecha:
-                liga_fecha_ids.setdefault((liga_key, fecha), []).append(p["id"])
+            local_lookup[espn_nombre.lower()] = pid
+            liga_fecha_ids.setdefault((liga_key, fecha), []).append(pid)
         else:
-            local_lookup[p["local"].lower()] = p["id"]
+            local_lookup[p["local"].lower()] = pid
             logger.warning(
                 "auto_sync: '%s' no está en NOMBRE_A_ESPN — usando nombre directo",
                 p["local"],
             )
-    ligas_usadas = list({k[0] for k in liga_fecha_ids.keys()}) 
+
+    ligas_usadas = list({k[0] for k in liga_fecha_ids.keys()})
     logger.info(
         "auto_sync: %d partido(s) | ligas=%s | combinaciones liga+fecha=%s",
         len(PARTIDOS), ligas_usadas, list(liga_fecha_ids.keys()),
     )
+
     while True:
         try:
             now = datetime.now(timezone.utc)
@@ -514,7 +518,7 @@ async def auto_sync_loop() -> None:
             logger.error("auto_sync_loop: error inesperado — %s", exc)
 
         await asyncio.sleep(600)
-
+        
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
