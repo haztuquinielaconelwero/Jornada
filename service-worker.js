@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'quinielas-v84';
+const CACHE_VERSION = 'quinielas-v85';
 const ARCHIVOS_ESTATICOS = [
 '/manifest.json',
 ];

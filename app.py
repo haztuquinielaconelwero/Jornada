@@ -267,7 +267,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Belgica":       ("Belgium",                "mundial"),
     "Brasil":        ("Brazil",                 "mundial"),
     "Cabo Verde":    ("Cape Verde",             "mundial"),
-    "Chequia":       ("Czechia",                "mundial"),
+    "Chequia":       ("Czech Republic",         "mundial"),
     "Colombia":      ("Colombia",               "mundial"),
     "Corea Sur":     ("South Korea",            "mundial"),
     "Costa Marfil":  ("Ivory Coast",            "mundial"),
@@ -293,6 +293,12 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Turquia":       ("Turkey",                 "mundial"),
     "Uruguay":       ("Uruguay",                "mundial"),
 }
+def _normalizar_nombre(nombre: str) -> str:
+    nombre = nombre.strip().lower()
+    nombre = unicodedata.normalize("NFD", nombre)
+    nombre = "".join(c for c in nombre if unicodedata.category(c) != "Mn")
+    return nombre
+
 def _parsear_eventos_espn(
     data: dict,
     local_lookup: dict[str, int],
@@ -306,7 +312,9 @@ def _parsear_eventos_espn(
                 continue
             home_name = home_score = away_score = None
             for team in (comp.get("competitors") or []):
-                nombre = (team.get("team", {}).get("displayName") or "").lower()
+                # CAMBIO ① — normalizar el nombre que devuelve ESPN
+                nombre_raw = (team.get("team", {}).get("displayName") or "")
+                nombre = _normalizar_nombre(nombre_raw)
                 score  = team.get("score")
                 if team.get("homeAway") == "home":
                     home_name  = nombre
@@ -326,10 +334,9 @@ def _parsear_eventos_espn(
             encontrados.append((pid, gh, ga, res))
     return encontrados
 
-
 async def auto_sync_loop() -> None:
     await asyncio.sleep(15)
-    logger.info("auto_sync_loop v5 (ESPN + dates) iniciado")
+    logger.info("auto_sync_loop v6 (ESPN + dates + normalización) iniciado")
 
     kickoff_por_id: dict[int, datetime] = {}
     for p in PARTIDOS:
@@ -363,10 +370,10 @@ async def auto_sync_loop() -> None:
 
         if entry:
             espn_nombre, liga_key = entry
-            local_lookup[espn_nombre.lower()] = pid
+            local_lookup[_normalizar_nombre(espn_nombre)] = pid
             liga_fecha_ids.setdefault((liga_key, fecha), []).append(pid)
         else:
-            local_lookup[p["local"].lower()] = pid
+            local_lookup[_normalizar_nombre(p["local"])] = pid
             logger.warning(
                 "auto_sync: '%s' no está en NOMBRE_A_ESPN — usando nombre directo",
                 p["local"],
@@ -516,6 +523,8 @@ async def auto_sync_loop() -> None:
             return
         except Exception as exc:
             logger.error("auto_sync_loop: error inesperado — %s", exc)
+            await asyncio.sleep(60)
+            continue
 
         await asyncio.sleep(600)
         
