@@ -409,21 +409,28 @@ out[String(matchId)] = [];
 }
 return out;
 }
-function buildSentContentKey(q, partidosRef = []) {
-if (q.pythonId != null) return `py-${q.pythonId}`;
-const norm = s => (typeof s === 'string' ? s.trim().toLowerCase() : '');
+function buildSentContentKey(q, partidosRef) {
+if (q.pythonId !== null && q.pythonId !== undefined) return `py-${q.pythonId}`;
+if (q.folio !== null && q.folio !== undefined) return `fo-${q.folio}`;
+if (q.id !== null && q.id !== undefined) return `local-${q.id}`;
+const norm = s => typeof s === 'string' ? s.trim().toLowerCase() : '';
 const predictions = q.predictions ?? {};
-const picks = partidosRef.length > 0
+const picks = Array.isArray(partidosRef) && partidosRef.length > 0
 ? partidosRef.map(p => {
 const pred = predictions[String(p.id)];
 if (!pred || (Array.isArray(pred) && pred.length === 0)) return '-';
 return Array.isArray(pred) ? [...pred].sort().join('') : String(pred).trim().toUpperCase();
 }).join('|')
-: Object.keys(predictions).sort().map(k => {
+: Object.keys(predictions)
+.map(Number)
+.sort((a, b) => a - b)
+.map(String)
+.map(k => {
 const v = predictions[k];
-return `${k}:${Array.isArray(v) ? [...v].sort().join('') : String(v).trim().toUpperCase()}`;
+if (!v || (Array.isArray(v) && v.length === 0)) return '-';
+return Array.isArray(v) ? [...v].sort().join('') : String(v).trim().toUpperCase();
 }).join('|');
-return `${norm(q.name || q.nombre)}|${norm(q.vendedor)}|${norm(q.jornada)}|${picks}`;
+return norm(q.name ?? q.nombre) + '|' + norm(q.vendedor) + '|' + norm(q.jornada) + '|' + picks;
 }
 function getSentScore(q) {
 let score = 0;
@@ -3446,8 +3453,18 @@ const normalizar = s => (s || '').trim().toLowerCase().normalize('NFD').replace(
 const nombre = normalizar(q.name || q.nombre);
 const vendedor = normalizar(q.vendedor);
 const jornada = normalizar(q.jornada);
-const picks = partidos.map(p => {
+const picks = Array.isArray(partidos) && partidos.length > 0
+? partidos.map(p => {
 const pred = q.predictions?.[String(p.id)];
+if (!pred || (Array.isArray(pred) && pred.length === 0)) return '-';
+return Array.isArray(pred) ? [...pred].sort().join('') : String(pred).toUpperCase();
+}).join('|')
+: Object.keys(q.predictions ?? {})
+.map(Number)
+.sort((a, b) => a - b)
+.map(String)
+.map(k => {
+const pred = q.predictions[k];
 if (!pred || (Array.isArray(pred) && pred.length === 0)) return '-';
 return Array.isArray(pred) ? [...pred].sort().join('') : String(pred).toUpperCase();
 }).join('|');
@@ -3468,7 +3485,7 @@ return puntos;
 }
 function normalizarEstadoJugada(estado) {
 if (estado === 'jugando') return 'jugando';
-if (estado === 'espera')  return 'espera';
+if (estado === 'espera') return 'espera';
 return 'pendiente';
 }
 async function actualizarEstadosDesdeBackend() {
@@ -3484,8 +3501,7 @@ return;
 }
 const sentActual = AppState.getSent();
 if (sentActual.length === 0 && ENV?.isDev) {
-console.warn('%c actualizarEstadosDesdeBackend: sentQuinielas vacío — posible borrado de caché reciente',
-'color:#facc15;font-weight:bold');
+console.warn('%c actualizarEstadosDesdeBackend: sentQuinielas vacío — posible borrado de caché reciente', 'color:#facc15;font-weight:bold');
 }
 const apiParams = {
 vendedor,
@@ -3495,18 +3511,17 @@ jornada: jornadaNombre,
 let resPend, resEsp, resJug;
 try {
 const _urlPend = apiUrl('/api/pendientes', apiParams);
-const _urlEsp  = apiUrl('/api/espera',     apiParams);
-const _urlJug  = apiUrl('/api/jugando',    apiParams);
+const _urlEsp = apiUrl('/api/espera', apiParams);
+const _urlJug = apiUrl('/api/jugando', apiParams);
 const [_rP, _rE, _rJ] = await Promise.all([
 fetch(_urlPend, { headers: { 'Accept': 'application/json' } }),
-fetch(_urlEsp,  { headers: { 'Accept': 'application/json' } }),
-fetch(_urlJug,  { headers: { 'Accept': 'application/json' } }),
+fetch(_urlEsp, { headers: { 'Accept': 'application/json' } }),
+fetch(_urlJug, { headers: { 'Accept': 'application/json' } }),
 ]);
 resPend = { data: _rP.ok ? await _rP.json() : null, error: _rP.ok ? null : `HTTP ${_rP.status}` };
-resEsp  = { data: _rE.ok ? await _rE.json() : null, error: _rE.ok ? null : `HTTP ${_rE.status}` };
-resJug  = { data: _rJ.ok ? await _rJ.json() : null, error: _rJ.ok ? null : `HTTP ${_rJ.status}` };
-}
-catch (err) {
+resEsp = { data: _rE.ok ? await _rE.json() : null, error: _rE.ok ? null : `HTTP ${_rE.status}` };
+resJug = { data: _rJ.ok ? await _rJ.json() : null, error: _rJ.ok ? null : `HTTP ${_rJ.status}` };
+} catch (err) {
 if (ENV?.isDev) console.warn('⚠️ actualizarEstadosDesdeBackend: error en Promise.all', err);
 return;
 }
@@ -3521,12 +3536,12 @@ espera: resEsp?.error ?? 'ok',
 jugando: resJug?.error ?? 'ok',
 });
 }
-const partidos = AppState.getPartidos();
+const partidosActuales = AppState.getPartidos();
 function normalizarQuiniela(q, estado) {
 const preds = {};
 if (Array.isArray(q.picks)) {
 q.picks.forEach((pick, idx) => {
-const p = partidos[idx];
+const p = partidosActuales[idx];
 const key = p ? String(p.id) : String(idx);
 preds[key] = (pick && pick !== '-') ? [String(pick).trim().toUpperCase()] : [];
 });
@@ -3552,11 +3567,14 @@ console.warn('⚠️ actualizarEstadosDesdeBackend: 0 quinielas desde backend');
 }
 let sent = AppState.getSent();
 const norm = s => (typeof s === 'string' ? s.trim().toLowerCase() : '');
-const toKey = (preds) => partidos.map(p => {
+const toKey = (preds) => {
+if (!Array.isArray(partidosActuales) || partidosActuales.length === 0) return null;
+return partidosActuales.map(p => {
 const pred = preds?.[String(p.id)];
 if (!pred || (Array.isArray(pred) && pred.length === 0)) return '-';
 return Array.isArray(pred) ? [...pred].sort().join('') : String(pred);
 }).join('|');
+};
 allQuinielas.forEach(qBackend => {
 let local = sent.find(q => q.pythonId != null && String(q.pythonId) === String(qBackend.id));
 if (!local && qBackend.folio != null) {
@@ -3566,7 +3584,10 @@ if (!local) {
 local = sent.find(q => {
 if (norm(q.name) !== norm(qBackend.nombre)) return false;
 if (norm(q.vendedor) !== norm(qBackend.vendedor)) return false;
-return toKey(q.predictions) === toKey(qBackend.predictions);
+const keyLocal = toKey(q.predictions);
+const keyBackend = toKey(qBackend.predictions);
+if (keyLocal === null || keyBackend === null) return false;
+return keyLocal === keyBackend;
 });
 }
 if (local) {
@@ -3589,8 +3610,8 @@ if (ENV?.isDev) console.log(`🔄 Sincronización completa: ${allQuinielas.lengt
 }
 function getEstadoMeta(estado) {
 const e = normalizarEstadoJugada(estado);
-if (e === 'jugando') return { estado: 'jugando',   label: 'Jugando ✔ ',    order: 0, cardClass: 'jugando'    };
-if (e === 'espera')  return { estado: 'espera',    label: 'En espera',    order: 1, cardClass: 'espera'     };
+if (e === 'jugando') return { estado: 'jugando', label: 'Jugando ✔ ', order: 0, cardClass: 'jugando' };
+if (e === 'espera') return { estado: 'espera', label: 'En espera', order: 1, cardClass: 'espera' };
 return { estado: 'pendiente', label: 'No jugando ✖', order: 2, cardClass: 'no-jugando' };
 }
 async function renderMyQuinielas() {
@@ -3722,33 +3743,28 @@ console.warn(`⚠️ Duplicado (pase 1) eliminado: folio=${q.folio}, nombre="${q
 }
 }
 if (partidos.length > 0) {
-const porContenido = new Map();
+const porIdentidad = new Map();
 for (const q of limpias) {
-const ckey = generarKeyUnificada(q, partidos);
-if (!porContenido.has(ckey)) {
-porContenido.set(ckey, q);
+const idKey = q.pythonId != null
+? `py-${q.pythonId}`
+: q.folio != null
+? `fo-${q.folio}`
+: `local-${q.id ?? Math.random()}`;
+if (!porIdentidad.has(idKey)) {
+porIdentidad.set(idKey, q);
 } else {
-const existente = porContenido.get(ckey);
+const existente = porIdentidad.get(idKey);
 const scoreExistente = (existente.pythonId != null ? 4 : 0) + (existente.folio != null ? 2 : 0);
-const scoreCurrent  = (q.pythonId != null ? 4 : 0) + (q.folio != null ? 2 : 0);
-let ganador, perdedor;
-if (scoreCurrent > scoreExistente) {
-ganador = q;
-perdedor = existente;
-} else if (scoreCurrent === scoreExistente) {
-ganador = (q.id ?? 0) >= (existente.id ?? 0) ? q : existente;
-perdedor = ganador === q ? existente : q;
-} else {
-ganador = existente;
-perdedor = q;
-}
-porContenido.set(ckey, ganador);
+const scoreCurrent = (q.pythonId != null ? 4 : 0) + (q.folio != null ? 2 : 0);
+const ganador = scoreCurrent > scoreExistente ? q : existente;
+const perdedor = ganador === q ? existente : q;
+porIdentidad.set(idKey, ganador);
 if (ENV?.isDev) {
-console.warn(`⚠️ Duplicado (pase 2 contenido) eliminado: folio=${perdedor?.folio ?? 'null'}, pythonId=${perdedor?.pythonId ?? 'null'}, nombre="${perdedor?.name}"`);
+console.warn(`⚠️ Duplicado real (pase 2) eliminado: folio=${perdedor?.folio ?? 'null'}, pythonId=${perdedor?.pythonId ?? 'null'}, nombre="${perdedor?.name}"`);
 }
 }
 }
-const limp2 = [...porContenido.values()];
+const limp2 = [...porIdentidad.values()];
 const removedP2 = limpias.length - limp2.length;
 if (removedP2 > 0) {
 limpias.length = 0;
