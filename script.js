@@ -3596,6 +3596,7 @@ folio: q.folio ?? null,
 predictions: preds,
 estado: normalizarEstadoJugada(estado),
 jornada: jornadaNombre,
+userId: q.userId ?? q.userid ?? null,  
 };
 }
 const allQuinielas = [];
@@ -3694,7 +3695,13 @@ return { ...q, jornada: jornadaNombre };
 return q;
 });
 if (huboMigracion) AppState.replaceSent(sent);
-const deJornada = sent.filter(q => q.jornada === jornadaNombre);
+const currentUserId = typeof userId !== 'undefined' ? userId : null;
+let deJornada = sent.filter(q => q.jornada === jornadaNombre);
+if (currentUserId) {
+deJornada = deJornada.filter(q => q.userId === currentUserId);
+} else {
+deJornada = [];
+}
 const deJornadaFinal = deJornada;
 if (deJornadaFinal.length === 0) {
 container.innerHTML = `<div class="empty-state"><span class="empty-icon">📋</span><p>Aún no has enviado quinielas para la ${escapeHtml(jornadaNombre)}</p><button class="btn-primary" onclick="navigateTo('quiniela')">Crear mi primera quiniela</button></div>`;

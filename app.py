@@ -1877,7 +1877,7 @@ async def enviar_whatsapp(data: EnviarWhatsAppInput):
     return {"success": True, "vendedor": data.vendedor, "numero": numero, "url": url}
 # ║     ⚽ Esto de abajo trabaja en distintas cosas     ║ # ║     ⚽ Esto de abajo trabaja en distintas cosas     ║
 _ORDENES_VALIDAS    = {"ASC", "DESC"}
-_COLS_LISTA         = "id, nombre, vendedor, folio, predictions"
+_COLS_LISTA = "id, nombre, vendedor, folio, predictions, user_id"
 _COLS_LISTA_OFICIAL = "id, nombre, vendedor, folio, predictions, fecha_creacion"
 
 def _formatear_picks(predictions: dict) -> list[str]:
@@ -1892,35 +1892,57 @@ def _formatear_picks(predictions: dict) -> list[str]:
 
 async def _obtener_quinielas_por_estado(
     vendedor: str,
-    estado:   str,
-    jornada:  str,
-    orden:    str = "ASC",
-    user_id: str = None,
+    estado: str,
+    jornada: str,
+    orden: str = "ASC",
+    user_id: str | None = None,
 ) -> list[dict]:
     orden_seguro = orden.upper() if orden.upper() in _ORDENES_VALIDAS else "ASC"
+
     def _query() -> list[dict]:
         with get_db() as conn:
             with conn.cursor() as cur:
-                cur.execute(f"""
-                    SELECT {_COLS_LISTA}
-                    FROM quinielas
-                    WHERE vendedor = %s
-                      AND estado   = %s
-                      AND jornada  = %s
-                    ORDER BY fecha_creacion {orden_seguro}
-                """, (vendedor, estado, jornada))
+                if user_id:
+                    cur.execute(
+                        f"""
+                        SELECT {_COLS_LISTA}
+                        FROM quinielas
+                        WHERE vendedor = %s
+                          AND estado   = %s
+                          AND jornada  = %s
+                          AND user_id  = %s
+                        ORDER BY fecha_creacion {orden_seguro}
+                        """,
+                        (vendedor, estado, jornada, user_id),
+                    )
+                else:
+                    cur.execute(
+                        f"""
+                        SELECT {_COLS_LISTA}
+                        FROM quinielas
+                        WHERE vendedor = %s
+                          AND estado   = %s
+                          AND jornada  = %s
+                        ORDER BY fecha_creacion {orden_seguro}
+                        """,
+                        (vendedor, estado, jornada),
+                    )
+
                 rows = cur.fetchall()
-        return [
-            {
-                "id":       row["id"],
-                "nombre":   row["nombre"],
-                "vendedor": row["vendedor"],
-                "folio":    row["folio"],
-                "picks":    _formatear_picks(row["predictions"]),
-            }
-            for row in rows
-        ]
+                return [
+                    {
+                        "id":       row["id"],
+                        "nombre":   row["nombre"],
+                        "vendedor": row["vendedor"],
+                        "folio":    row["folio"],
+                        "picks":    _formatear_picks(row["predictions"]),
+                        "userId":   row["user_id"],   # ← aquí lo mandamos al frontend
+                    }
+                    for row in rows
+                ]
+
     return await asyncio.to_thread(_query)
+
 @app.get("/api/vendedores")
 async def listar_vendedores():
     vendedores = []
