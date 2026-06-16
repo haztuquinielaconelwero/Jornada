@@ -178,7 +178,6 @@ const AppState = (() => {
 const SCHEMA_VERSION = 2;
 const STORAGE_KEY = 'quinielasData';
 const MAX_SAVED = 200;
-const MAX_SENT = 500;
 function validateQuiniela(q) {
 if (!q || typeof q !== 'object')
 return { valid: false, reason: 'No es un objeto' };
@@ -283,23 +282,37 @@ sentQuinielas: _sentQuinielas,
 }));
 } catch (e) {
 if (e?.name === 'QuotaExceededError' || e?.code === 22) {
-console.error('❌ AppState: localStorage lleno. Limpiando sentQuinielas antiguas...');
-_sentQuinielas = [];
+console.error('❌ AppState: localStorage lleno. Limpiando solo quinielas viejas...');
+const _jornadaVigente = window.jornadaActual?.nombre ?? null;
+_sentQuinielas = _sentQuinielas.filter(q =>
+q.estado === 'jugando' ||
+q.estado === 'espera' ||
+(_jornadaVigente && q.jornada === _jornadaVigente)
+);
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify({
 _version: SCHEMA_VERSION,
 savedQuinielas: _savedQuinielas,
-sentQuinielas: [],
+sentQuinielas: _sentQuinielas,
 }));
-console.warn('⚠️ AppState: sentQuinielas vaciado para liberar espacio.');
+console.warn(`⚠️ AppState: limpieza inteligente aplicada. Quedan ${_sentQuinielas.length} quinielas.`);
 } catch {
-console.error('❌ AppState: localStorage sigue lleno. No se pudo persistir.');
-}
-} else {
+_sentQuinielas = _sentQuinielas.filter(q =>
+q.estado === 'jugando' || q.estado === 'espera'
+);
+try {
+localStorage.setItem(STORAGE_KEY, JSON.stringify({
+_version: SCHEMA_VERSION,
+savedQuinielas: [],
+sentQuinielas: _sentQuinielas,
+}));
+console.warn('⚠️ AppState: último recurso aplicado. Solo se conservaron jugando/espera.');
+} catch {
+console.error('❌ AppState: localStorage COMPLETAMENTE lleno. Datos no persistidos.');
+}}}
+else {
 console.error('❌ AppState: error inesperado al guardar:', e);
-}
-}
-}
+}}}
 function getPredictions() {
 return { ..._quinielaPredictions };
 }
@@ -386,10 +399,17 @@ return [..._sentQuinielas];
 }
 function normalizarEstadoJugada(estado) {
 const raw = typeof estado === 'string' ? estado.trim().toLowerCase() : '';
-if (raw === 'jugando') return 'jugando';
-if (raw === 'espera') return 'espera';
-if (raw === 'pendiente') return 'pendiente';
-return 'pendiente';
+const mapa = {
+'jugando'   : 'jugando',
+'espera'    : 'espera',
+'pendiente' : 'pendiente',
+'confirmado': 'jugando',
+'finalizado': 'jugando',
+'rechazado' : 'rechazado',
+'rechazada' : 'rechazado',
+'borrador'  : 'borrador',
+};
+return mapa[raw] ?? 'pendiente';
 }
 function normalizarPredictionsJugada(predictions = {}) {
 const out = {};
@@ -414,6 +434,7 @@ if (q.pythonId !== null && q.pythonId !== undefined) return `py-${q.pythonId}`;
 if (q.folio !== null && q.folio !== undefined) return `fo-${q.folio}`;
 if (q.id !== null && q.id !== undefined) return `local-${q.id}`;
 const norm = s => typeof s === 'string' ? s.trim().toLowerCase() : '';
+const estadoNorm = normalizarEstadoJugada(q.estado);
 const predictions = q.predictions ?? {};
 const picks = Array.isArray(partidosRef) && partidosRef.length > 0
 ? partidosRef.map(p => {
@@ -430,7 +451,7 @@ const v = predictions[k];
 if (!v || (Array.isArray(v) && v.length === 0)) return '-';
 return Array.isArray(v) ? [...v].sort().join('') : String(v).trim().toUpperCase();
 }).join('|');
-return norm(q.name ?? q.nombre) + '|' + norm(q.vendedor) + '|' + norm(q.jornada) + '|' + picks;
+return norm(q.name ?? q.nombre) + '|' + norm(q.vendedor) + '|' + norm(q.jornada) + '|' + estadoNorm + '|' + picks;
 }
 function getSentScore(q) {
 let score = 0;
@@ -507,8 +528,13 @@ estado: normalizarEstadoJugada(prev.estado || q.estado),
 }
 });
 _sentQuinielas = Array.from(mapa.values());
-if (_sentQuinielas.length > MAX_SENT) {
-_sentQuinielas = _sentQuinielas.slice(-MAX_SENT);
+const _jornadaVigente = window.jornadaActual?.nombre ?? null;
+if (_jornadaVigente) {
+_sentQuinielas = _sentQuinielas.filter(q => {
+if (q.jornada === _jornadaVigente) return true;
+if (q.estado === 'jugando' || q.estado === 'espera') return true;
+return false;
+});
 }
 saveToStorage();
 _emit('sentChanged', { action: 'replace', count: _sentQuinielas.length });
@@ -1770,6 +1796,11 @@ data = await res.json();
 lastError = 'Respuesta no es JSON válido';
 if (ENV?.isDev) console.warn(`⚠️ fetchAPI: ${lastError} → ${url}`);
 break;
+}
+if (data && data.offline === true) {
+if (typeof showToast === 'function') {
+showToast('Sin internet: puedes ver tus quinielas guardadas, pero algunas funciones necesitan conexión.', 'warning');
+}
 }
 return { data, error: null, status: res.status };
 } catch (err) {
@@ -3484,9 +3515,18 @@ if (resultado && pick && resultado === pick) puntos++;
 return puntos;
 }
 function normalizarEstadoJugada(estado) {
-if (estado === 'jugando') return 'jugando';
-if (estado === 'espera') return 'espera';
-return 'pendiente';
+const raw = typeof estado === 'string' ? estado.trim().toLowerCase() : '';
+const mapa = {
+'jugando'   : 'jugando',
+'espera'    : 'espera',
+'pendiente' : 'pendiente',
+'confirmado': 'jugando',
+'finalizado': 'jugando',
+'rechazado' : 'rechazado',
+'rechazada' : 'rechazado',
+'borrador'  : 'borrador',
+};
+return mapa[raw] ?? 'pendiente';
 }
 async function actualizarEstadosDesdeBackend() {
 const vendedor = VendedorManager.current;
@@ -3566,6 +3606,15 @@ if (allQuinielas.length === 0 && ENV?.isDev) {
 console.warn('⚠️ actualizarEstadosDesdeBackend: 0 quinielas desde backend');
 }
 let sent = AppState.getSent();
+if (sent.length === 0) {
+if (allQuinielas.length > 0) {
+AppState.replaceSent(allQuinielas);
+deduplicarSentQuinielas();
+if (typeof updateHeroStats === 'function') updateHeroStats();
+if (ENV?.isDev) console.log(`✅ actualizarEstadosDesdeBackend: sent vacío, reconstruido con ${allQuinielas.length} quinielas del servidor`);
+}
+return;
+}
 const norm = s => (typeof s === 'string' ? s.trim().toLowerCase() : '');
 const toKey = (preds) => {
 if (!Array.isArray(partidosActuales) || partidosActuales.length === 0) return null;
@@ -3610,9 +3659,10 @@ if (ENV?.isDev) console.log(`🔄 Sincronización completa: ${allQuinielas.lengt
 }
 function getEstadoMeta(estado) {
 const e = normalizarEstadoJugada(estado);
-if (e === 'jugando') return { estado: 'jugando', label: 'Jugando ✔ ', order: 0, cardClass: 'jugando' };
-if (e === 'espera') return { estado: 'espera', label: 'En espera', order: 1, cardClass: 'espera' };
-return { estado: 'pendiente', label: 'No jugando ✖', order: 2, cardClass: 'no-jugando' };
+if (e === 'jugando')   return { estado: 'jugando',   label: 'Jugando ✔',    order: 0, cardClass: 'jugando' };
+if (e === 'espera')    return { estado: 'espera',    label: 'En espera',    order: 1, cardClass: 'espera' };
+if (e === 'rechazado') return { estado: 'rechazado', label: 'Rechazada ✖',  order: 3, cardClass: 'rechazado' };
+return                    { estado: 'pendiente', label: 'No jugando ✖', order: 2, cardClass: 'no-jugando' };
 }
 async function renderMyQuinielas() {
 const container = document.getElementById('myQuinielasList');
@@ -3645,12 +3695,7 @@ return q;
 });
 if (huboMigracion) AppState.replaceSent(sent);
 const deJornada = sent.filter(q => q.jornada === jornadaNombre);
-const sentKeys = new Set(deJornada.map(q => generarKeyUnificada(q, partidos)));
-const savedComoSent = AppState.getSaved()
-.filter(q => q.jornada === jornadaNombre)
-.map(q => ({ ...q, estado: 'pendiente' }))
-.filter(q => !sentKeys.has(generarKeyUnificada(q, partidos)));
-const deJornadaFinal = [...savedComoSent, ...deJornada];
+const deJornadaFinal = deJornada;
 if (deJornadaFinal.length === 0) {
 container.innerHTML = `<div class="empty-state"><span class="empty-icon">📋</span><p>Aún no has enviado quinielas para la ${escapeHtml(jornadaNombre)}</p><button class="btn-primary" onclick="navigateTo('quiniela')">Crear mi primera quiniela</button></div>`;
 return;

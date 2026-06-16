@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'quinielas-v86';
+const CACHE_VERSION = 'quinielas-v90';
 const ARCHIVOS_ESTATICOS = [
 '/manifest.json',
 ];
@@ -48,7 +48,19 @@ url.includes('/admin') ||
 url.includes('/pendientes') ||
 url.includes('/lista-oficial') ||
 url.includes('/resultados');
-if (esDinamica) return;
+if (esDinamica) {
+e.respondWith(
+fetch(e.request).catch(() =>
+caches.match(e.request).then(cached =>
+cached || new Response(
+JSON.stringify({ success: false, error: 'Sin conexión', offline: true }),
+{ headers: { 'Content-Type': 'application/json' } }
+)
+)
+)
+);
+return;
+}
 if (e.request.mode === 'navigate') {
 e.respondWith(
 fetch(e.request)

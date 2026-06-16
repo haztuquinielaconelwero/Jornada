@@ -588,7 +588,7 @@ app.add_middleware(
     max_age=3600,
 )
 # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║
-JORNADA_ACTUAL     = "Mundial 1"
+JORNADA_ACTUAL     = "Mundial 2"
 MAX_DOBLES         = 4
 MAX_TRIPLES        = 3
 PRECIO_NORMAL      = 30
@@ -602,12 +602,12 @@ if PRECIO_DESCUENTO >= PRECIO_NORMAL:
     )
 
 JORNADA_CONFIG = {
-    "numero":       1,
-    "nombre":       "Mundial 1",
-    "codigo_grupo": "M1",
-    "link_grupo":   "https://chat.whatsapp.com/GqOaoBoIsDABoe98c6g0qg",
-    "inicio":       "2026-06-11T13:00:00-06:00",  
-    "fin":          "2026-06-14T22:00:00-06:00",   
+    "numero":       2,
+    "nombre":       "Mundial 2",
+    "codigo_grupo": "M2",
+    "link_grupo":   "https://chat.whatsapp.com/EWTiaxpFJxT4SFVn03yw0r",
+    "inicio":       "2026-06-15T19:00:00-06:00",
+    "fin":          "2026-06-21T18:30:00-06:00",
 }
 
 _inicio_dt = datetime.fromisoformat(JORNADA_CONFIG["inicio"])
@@ -621,87 +621,87 @@ JORNADA_CONFIG["iniciodt"] = _inicio_dt
 JORNADA_CONFIG["findt"]    = _fin_dt
 
 PARTIDOS = [
-    {
-        "id": 0,
-        "local": "Mexico",           "localLogo": "/logos/mexico.png",
-        "visitante": "Sudafrica",    "visitanteLogo": "/logos/sudafrica.png",
-        "horario": "Jueves 11 junio 1 pm",
-        "televisora": "Canal 5 / TUDN / Azteca / ViX",
-        "televisionLogo": "/logos/canal-5.png",
-        "kickoff": "2026-06-11T13:00:00-06:00",
-    },
-    {
-        "id": 1,
-        "local": "Corea Sur",        "localLogo": "/logos/corea-del-sur.png",
-        "visitante": "Chequia",      "visitanteLogo": "/logos/chequia.png",
-        "horario": "Jueves 11 junio 8 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-11T20:00:00-06:00",
-    },
-    {
-        "id": 2,
-        "local": "Eua",              "localLogo": "/logos/eua.png",
-        "visitante": "Paraguay",     "visitanteLogo": "/logos/paraguay.png",
-        "horario": "Viernes 12 junio 7 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-12T19:00:00-06:00",
-    },
-    {
-        "id": 3,
-        "local": "Brasil",           "localLogo": "/logos/brasil.png",
-        "visitante": "Marruecos",    "visitanteLogo": "/logos/marruecos.png",
-        "horario": "Sábado 13 junio 4 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-13T16:00:00-06:00",
-    },
-    {
-        "id": 4,
-        "local": "Australia",        "localLogo": "/logos/australia.png",
-        "visitante": "Turquia",      "visitanteLogo": "/logos/turquia.png",
-        "horario": "Sábado 13 junio 10 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-13T22:00:00-06:00",
-    },
-    {
-        "id": 5,
-        "local": "Alemania",         "localLogo": "/logos/alemania.png",
-        "visitante": "Curazao",      "visitanteLogo": "/logos/curazao.png",
-        "horario": "Domingo 14 junio 11 am",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-14T11:00:00-06:00",
-    },
-    {
-        "id": 6,
-        "local": "Paises Bajos",     "localLogo": "/logos/paises-bajos.png",
-        "visitante": "Japon",        "visitanteLogo": "/logos/japon.png",
-        "horario": "Domingo 14 junio 2 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-14T14:00:00-06:00",
-    },
-    {
-        "id": 7,
-        "local": "Costa Marfil",     "localLogo": "/logos/costa-de-marfil.png",
-        "visitante": "Ecuador",      "visitanteLogo": "/logos/ecuador.png",
-        "horario": "Domingo 14 junio 5 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-14T17:00:00-06:00",
-    },
-    {
-        "id": 8,
-        "local": "Suecia",           "localLogo": "/logos/suecia.png",
-        "visitante": "Tunez",        "visitanteLogo": "/logos/tunez.png",
-        "horario": "Domingo 14 junio 8 pm",
-        "televisora": "ViX",
-        "televisionLogo": "/logos/vix.png",
-        "kickoff": "2026-06-14T20:00:00-06:00",
-    },
+  {
+    "id": 0,
+    "local": "Mexico",          "localLogo": "/logos/mexico.png",
+    "visitante": "Corea Sur",   "visitanteLogo": "/logos/corea-del-sur.png",
+    "horario": "Jueves 18 junio 7 pm",
+    "televisora": "Canal 5 / TUDN / Azteca 7 / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-06-18T19:00:00-06:00"
+  },
+  {
+    "id": 1,
+    "local": "Eua",             "localLogo": "/logos/eua.png",
+    "visitante": "Australia",   "visitanteLogo": "/logos/australia.png",
+    "horario": "Viernes 19 junio 1 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-19T13:00:00-06:00"
+  },
+  {
+    "id": 2,
+    "local": "Escocia",         "localLogo": "/logos/escocia.png",
+    "visitante": "Marruecos",   "visitanteLogo": "/logos/marruecos.png",
+    "horario": "Viernes 19 junio 4 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-19T16:00:00-06:00"
+  },
+  {
+    "id": 3,
+    "local": "Turquia",         "localLogo": "/logos/turquia.png",
+    "visitante": "Paraguay",    "visitanteLogo": "/logos/paraguay.png",
+    "horario": "Viernes 19 junio 9 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-19T21:00:00-06:00"
+  },
+  {
+    "id": 4,
+    "local": "Paises Bajos",    "localLogo": "/logos/paises-bajos.png",
+    "visitante": "Suecia",      "visitanteLogo": "/logos/suecia.png",
+    "horario": "Sábado 20 junio 11 am",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-20T11:00:00-06:00"
+  },
+  {
+    "id": 5,
+    "local": "Alemania",        "localLogo": "/logos/alemania.png",
+    "visitante": "Costa Marfil","visitanteLogo": "/logos/costa-de-marfil.png",
+    "horario": "Sábado 20 junio 2 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-20T14:00:00-06:00"
+  },
+  {
+    "id": 6,
+    "local": "España",          "localLogo": "/logos/españa.png",
+    "visitante": "Arabia",      "visitanteLogo": "/logos/arabia.png",
+    "horario": "Domingo 21 junio 10 am",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-21T10:00:00-06:00"
+  },
+  {
+    "id": 7,
+    "local": "Belgica",         "localLogo": "/logos/belgica.png",
+    "visitante": "Iran",        "visitanteLogo": "/logos/iran.png",
+    "horario": "Domingo 21 junio 1 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-21T13:00:00-06:00"
+  },
+  {
+    "id": 8,
+    "local": "Uruguay",         "localLogo": "/logos/uruguay.png",
+    "visitante": "Cabo Verde",  "visitanteLogo": "/logos/cabo-verde.png",
+    "horario": "Domingo 21 junio 4 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-06-21T16:00:00-06:00"
+  },
 ]
 _total_especiales = MAX_DOBLES + MAX_TRIPLES
 if _total_especiales > len(PARTIDOS):
@@ -1584,6 +1584,12 @@ _COLS_CONFIRMAR = "id, nombre, vendedor, predictions, estado, folio, jornada, fe
 
 @app.patch("/api/quinielas/{quiniela_id}/confirmar")
 async def confirmar_quiniela(quiniela_id: int):
+    mensaje      = ""
+    nuevo_estado = ESTADO_ESPERA
+    nuevo_folio  = None
+    fecha_str    = None
+    row          = None
+
     try:
         with get_db() as conn:
             with conn.cursor() as cur:
@@ -1599,6 +1605,12 @@ async def confirmar_quiniela(quiniela_id: int):
                 vendedor      = row["vendedor"]
                 jornada       = row["jornada"]
                 estado_actual = row["estado"]
+
+                _fc = row["fecha_creacion"]
+                fecha_str = (
+                    _fc.isoformat() if hasattr(_fc, "isoformat")
+                    else str(_fc) if _fc else None
+                )
 
                 if estado_actual not in _ESTADOS_CONFIRMABLES:
                     raise HTTPException(
@@ -1631,7 +1643,7 @@ async def confirmar_quiniela(quiniela_id: int):
                         rango_raw if isinstance(rango_raw, list) else [rango_raw]
                     )
 
-                    lock_key = hash(f"{vendedor}{jornada}") & 0x7FFFFFFF
+                    lock_key = int(hashlib.md5(f"{vendedor}{jornada}".encode()).hexdigest()[:8], 16) % 2147483647
                     cur.execute("SELECT pg_advisory_xact_lock(%s)", (lock_key,))
 
                     cur.execute("""
@@ -1691,11 +1703,6 @@ async def confirmar_quiniela(quiniela_id: int):
                             folio  = %s
                         WHERE id = %s
                     """, (nuevo_estado, str(nuevo_folio) if nuevo_folio else None, quiniela_id))
-                _fc = row["fecha_creacion"]
-                fecha_str = (
-                    _fc.isoformat() if hasattr(_fc, "isoformat")
-                    else str(_fc) if _fc else None
-                )
 
     except HTTPException:
         raise
@@ -1710,11 +1717,11 @@ async def confirmar_quiniela(quiniela_id: int):
         "quiniela": {
             "id":             quiniela_id,
             "nombre":         row["nombre"],
-            "vendedor":       vendedor,
+            "vendedor":       row["vendedor"],
             "predictions":    row["predictions"],
             "estado":         nuevo_estado,
             "folio":          str(nuevo_folio) if nuevo_folio else None,
-            "jornada":        jornada,
+            "jornada":        row["jornada"],
             "fecha_creacion": fecha_str,
         },
     }
