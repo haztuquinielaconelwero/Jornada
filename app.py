@@ -1011,6 +1011,7 @@ LIMITES_VENDEDORES = {
     "Vender 1":       (2266, 2315),
     "Kany":           (2401, 2430),
     "Ever":           (2451, 2480),
+    "Caro":           (2501, 2525),
 }
 
 def vendedor_es_valido(vendedor: str) -> bool:
@@ -1042,6 +1043,7 @@ VENDEDOR_PINS = {
     "Arturo":       "1423",
     "Azael":        "1895",
     "Boosters":     "8106",
+    "Caro":         "0511",
     "Checo":        "3019",
     "Choneke":      "2323",
     "Dani":         "1728",
@@ -1083,6 +1085,7 @@ VENDEDOR_WHATSAPP = {
     "Arturo":       "5218182727993",
     "Azael":        "5218120708453",
     "Boosters":     "5218121942047",
+    "Caro":         "5215584076984",
     "Checo":        "5218281186921",
     "Choneke":      "5218138834830",
     "Dani":         "5218282942378",
@@ -1125,6 +1128,7 @@ VENDEDOR_LINKS = {
     "Arturo":       "https://www.quinielaselwero.com/?vendedor=Arturo",
     "Azael":        "https://www.quinielaselwero.com/?vendedor=Azael",
     "Boosters":     "https://www.quinielaselwero.com/?vendedor=Boosters",
+    "Caro":         "https://www.quinielaselwero.com/?vendedor=Caro",
     "Checo":        "https://www.quinielaselwero.com/?vendedor=Checo",
     "Choneke":      "https://www.quinielaselwero.com/?vendedor=Choneke",
     "Dani":         "https://www.quinielaselwero.com/?vendedor=Dani",
