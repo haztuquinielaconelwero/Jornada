@@ -267,12 +267,12 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Belgica":       ("Belgium",                "mundial"),
     "Brasil":        ("Brazil",                 "mundial"),
     "Cabo Verde":    ("Cape Verde",             "mundial"),
-    "Chequia":       ("Czech Republic",         "mundial"),
+    "Chequia":       ("Czechia",                "mundial"),
     "Colombia":      ("Colombia",               "mundial"),
     "Corea Sur":     ("South Korea",            "mundial"),
     "Costa Marfil":  ("Ivory Coast",            "mundial"),
     "Croacia":       ("Croatia",                "mundial"),
-    "Curazao":       ("Curacao",                "mundial"),
+    "Curazao":       ("Curaçao",                "mundial"),
     "Ecuador":       ("Ecuador",                "mundial"),
     "Escocia":       ("Scotland",               "mundial"),
     "España":        ("Spain",                  "mundial"),
@@ -290,7 +290,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Sudafrica":     ("South Africa",           "mundial"),
     "Suecia":        ("Sweden",                 "mundial"),
     "Tunez":         ("Tunisia",                "mundial"),
-    "Turquia":       ("Turkey",                 "mundial"),
+    "Turquia":       ("Türkiye",                "mundial"),
     "Uruguay":       ("Uruguay",                "mundial"),
 }
 def _normalizar_nombre(nombre: str) -> str:
