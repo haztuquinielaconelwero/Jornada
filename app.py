@@ -261,14 +261,19 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Monaco":      ("Monaco",                   "ligue_1"),
     "PSG":         ("Paris Saint-Germain",      "ligue_1"),
     # ── Selecciones Nacionales ───────────────────────────────────────
-    "Alemania":      ("Germany",                "mundial"),
+    "Alemania":      ("Germany",               "mundial"),
     "Arabia":        ("Saudi Arabia",           "mundial"),
+    "Argelia":       ("Algeria",                "mundial"),   
+    "Argentina":     ("Argentina",              "mundial"),   
+    "Austria":       ("Austria",                "mundial"), 
     "Australia":     ("Australia",              "mundial"),
     "Belgica":       ("Belgium",                "mundial"),
+    "Bosnia":        ("Bosnia-Herzegovina",     "mundial"), 
     "Brasil":        ("Brazil",                 "mundial"),
     "Cabo Verde":    ("Cape Verde",             "mundial"),
     "Chequia":       ("Czechia",                "mundial"),
     "Colombia":      ("Colombia",               "mundial"),
+    "Congo":         ("Congo DR",               "mundial"),   
     "Corea Sur":     ("South Korea",            "mundial"),
     "Costa Marfil":  ("Ivory Coast",            "mundial"),
     "Croacia":       ("Croatia",                "mundial"),
@@ -279,6 +284,7 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Eua":           ("United States",          "mundial"),
     "Francia":       ("France",                 "mundial"),
     "Ghana":         ("Ghana",                  "mundial"),
+    "Inglaterra":    ("England",                "mundial"),  
     "Iran":          ("Iran",                   "mundial"),
     "Japon":         ("Japan",                  "mundial"),
     "Marruecos":     ("Morocco",                "mundial"),
@@ -287,8 +293,10 @@ NOMBRE_A_ESPN: dict[str, tuple[str, str]] = {
     "Paises Bajos":  ("Netherlands",            "mundial"),
     "Paraguay":      ("Paraguay",               "mundial"),
     "Portugal":      ("Portugal",               "mundial"),
+    "Senegal":       ("Senegal",                "mundial"), 
     "Sudafrica":     ("South Africa",           "mundial"),
     "Suecia":        ("Sweden",                 "mundial"),
+    "Suiza":         ("Switzerland",            "mundial"),
     "Tunez":         ("Tunisia",                "mundial"),
     "Turquia":       ("Türkiye",                "mundial"),
     "Uruguay":       ("Uruguay",                "mundial"),
@@ -588,7 +596,7 @@ app.add_middleware(
     max_age=3600,
 )
 # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║
-JORNADA_ACTUAL     = "Mundial 3"
+JORNADA_ACTUAL     = "Mundial 16"
 MAX_DOBLES         = 4
 MAX_TRIPLES        = 3
 PRECIO_NORMAL      = 30
@@ -602,12 +610,12 @@ if PRECIO_DESCUENTO >= PRECIO_NORMAL:
     )
 
 JORNADA_CONFIG = {
-    "numero":       3,
-    "nombre":       "Mundial 3",
-    "codigo_grupo": "M3",
-    "link_grupo":   "https://chat.whatsapp.com/J7Xq0n2jLFu0PWK4r4Bb2g",
-    "inicio": "2026-06-22T17:00:00-06:00",
-    "fin":    "2026-06-27T20:00:00-06:00",
+    "numero":       16,
+    "nombre":       "Mundial 16",
+    "codigo_grupo": "M16",
+    "link_grupo":   "https://chat.whatsapp.com/LTnsIeuiHwOGeMsSphMrMY",
+    "inicio": "2026-06-28T14:00:00-06:00",
+    "fin":    "2026-07-03T21:30:00-06:00",
 }
 
 _inicio_dt = datetime.fromisoformat(JORNADA_CONFIG["inicio"])
@@ -623,84 +631,84 @@ JORNADA_CONFIG["findt"]    = _fin_dt
 PARTIDOS = [
   {
     "id": 0,
-    "local": "Chequia",           "localLogo": "/logos/chequia.png",
-    "visitante": "Mexico",        "visitanteLogo": "/logos/mexico.png",
-    "horario": "Miércoles 24 junio 7 pm",
-    "televisora": "Canal 5 / TUDN / Azteca / ViX",
+    "local": "Mexico",           "localLogo": "/logos/mexico.png",
+    "visitante": "Ecuador",      "visitanteLogo": "/logos/ecuador.png",
+    "horario": "Martes 30 junio 7 pm",
+    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
     "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-06-24T19:00:00-06:00"
+    "kickoff": "2026-06-30T19:00:00-06:00"
   },
   {
     "id": 1,
-    "local": "Ecuador",           "localLogo": "/logos/ecuador.png",
-    "visitante": "Alemania",      "visitanteLogo": "/logos/alemania.png",
-    "horario": "Jueves 25 junio 2 pm",
+    "local": "Inglaterra",       "localLogo": "/logos/inglaterra.png",
+    "visitante": "Congo",        "visitanteLogo": "/logos/congo.png",
+    "horario": "Miércoles 1 julio 10 am",
     "televisora": "ViX",
     "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-25T13:00:00-06:00"
+    "kickoff": "2026-07-01T10:00:00-06:00"
   },
   {
     "id": 2,
-    "local": "Tunez",             "localLogo": "/logos/tunez.png",
-    "visitante": "Paises Bajos",  "visitanteLogo": "/logos/paises-bajos.png",
-    "horario": "Jueves 25 junio 5 pm",
+    "local": "Belgica",          "localLogo": "/logos/belgica.png",
+    "visitante": "Senegal",      "visitanteLogo": "/logos/senegal.png",
+    "horario": "Miércoles 1 julio 2 pm",
     "televisora": "ViX",
     "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-25T17:00:00-06:00"
+    "kickoff": "2026-07-01T14:00:00-06:00"
   },
   {
     "id": 3,
-    "local": "Japon",             "localLogo": "/logos/japon.png",
-    "visitante": "Suecia",        "visitanteLogo": "/logos/suecia.png",
-    "horario": "Jueves 25 junio 5 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-25T17:00:00-06:00"
+    "local": "Eua",              "localLogo": "/logos/eua.png",
+    "visitante": "Bosnia",       "visitanteLogo": "/logos/bosnia.png",
+    "horario": "Miércoles 1 julio 6 pm",
+    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-07-01T18:00:00-06:00"
   },
   {
     "id": 4,
-    "local": "Turquia",           "localLogo": "/logos/turquia.png",
-    "visitante": "Eua",           "visitanteLogo": "/logos/eua.png",
-    "horario": "Jueves 25 junio 8 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-25T20:00:00-06:00"
+    "local": "España",           "localLogo": "/logos/españa.png",
+    "visitante": "Austria",      "visitanteLogo": "/logos/austria.png",
+    "horario": "Jueves 2 julio 1 pm",
+    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-07-02T13:00:00-06:00"
   },
   {
     "id": 5,
-    "local": "Noruega",           "localLogo": "/logos/noruega.png",
-    "visitante": "Francia",       "visitanteLogo": "/logos/francia.png",
-    "horario": "Viernes 26 junio 1 pm",
-    "televisora": "ViX",
+    "local": "Portugal",         "localLogo": "/logos/portugal.png",
+    "visitante": "Croacia",      "visitanteLogo": "/logos/croacia.png",
+    "horario": "Jueves 2 julio 5 pm",
+    "televisora": "Azteca 7 / ViX",
     "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-26T13:00:00-06:00"
+    "kickoff": "2026-07-02T17:00:00-06:00"
   },
   {
     "id": 6,
-    "local": "Uruguay",           "localLogo": "/logos/uruguay.png",
-    "visitante": "España",        "visitanteLogo": "/logos/españa.png",
-    "horario": "Viernes 26 junio 7 pm",
-    "televisora": "Canal 5 / TUDN / Azteca / ViX",
-    "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-06-26T19:00:00-06:00"
+    "local": "Suiza",            "localLogo": "/logos/suiza.png",
+    "visitante": "Argelia",      "visitanteLogo": "/logos/argelia.png",
+    "horario": "Jueves 2 julio 9 pm",
+    "televisora": "ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-07-02T21:00:00-06:00"
   },
   {
     "id": 7,
-    "local": "Croacia",           "localLogo": "/logos/croacia.png",
-    "visitante": "Ghana",         "visitanteLogo": "/logos/ghana.png",
-    "horario": "Sábado 27 junio 3 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-27T15:00:00-06:00"
+    "local": "Argentina",        "localLogo": "/logos/argentina.png",
+    "visitante": "Cabo Verde",   "visitanteLogo": "/logos/cabo-verde.png",
+    "horario": "Viernes 3 julio 4 pm",
+    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-07-03T16:00:00-06:00"
   },
   {
     "id": 8,
-    "local": "Colombia",          "localLogo": "/logos/colombia.png",
-    "visitante": "Portugal",      "visitanteLogo": "/logos/portugal.png",
-    "horario": "Sábado 27 junio 5:30 pm",
+    "local": "Colombia",         "localLogo": "/logos/colombia.png",
+    "visitante": "Ghana",        "visitanteLogo": "/logos/ghana.png",
+    "horario": "Viernes 3 julio 7:30 pm",
     "televisora": "ViX",
     "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-06-27T17:30:00-06:00"
+    "kickoff": "2026-07-03T19:30:00-06:00"
   },
 ]
 _total_especiales = MAX_DOBLES + MAX_TRIPLES
