@@ -320,7 +320,6 @@ def _parsear_eventos_espn(
                 continue
             home_name = home_score = away_score = None
             for team in (comp.get("competitors") or []):
-                # CAMBIO ① — normalizar el nombre que devuelve ESPN
                 nombre_raw = (team.get("team", {}).get("displayName") or "")
                 nombre = _normalizar_nombre(nombre_raw)
                 score  = team.get("score")
@@ -596,7 +595,7 @@ app.add_middleware(
     max_age=3600,
 )
 # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║ # ║     ⚽ Configuracion semanal ⚽       ║
-JORNADA_ACTUAL     = "Mundial 16"
+JORNADA_ACTUAL     = "Jornada 1"
 MAX_DOBLES         = 4
 MAX_TRIPLES        = 3
 PRECIO_NORMAL      = 30
@@ -610,12 +609,12 @@ if PRECIO_DESCUENTO >= PRECIO_NORMAL:
     )
 
 JORNADA_CONFIG = {
-    "numero":       16,
-    "nombre":       "Mundial 16",
-    "codigo_grupo": "M16",
-    "link_grupo":   "https://chat.whatsapp.com/LTnsIeuiHwOGeMsSphMrMY",
-    "inicio": "2026-06-28T14:00:00-06:00",
-    "fin":    "2026-07-03T21:30:00-06:00",
+    "numero":       1,
+    "nombre":       "Jornada 1",
+    "codigo_grupo": "J1",
+    "link_grupo":   "https://chat.whatsapp.com/KPCm0Ulq8sx0Pra6boe61P",
+    "inicio": "2026-07-14T16:00:00-06:00",
+    "fin":    "2026-07-18T23:00:00-06:00",
 }
 
 _inicio_dt = datetime.fromisoformat(JORNADA_CONFIG["inicio"])
@@ -631,84 +630,84 @@ JORNADA_CONFIG["findt"]    = _fin_dt
 PARTIDOS = [
   {
     "id": 0,
-    "local": "Mexico",           "localLogo": "/logos/mexico.png",
-    "visitante": "Ecuador",      "visitanteLogo": "/logos/ecuador.png",
-    "horario": "Martes 30 junio 7 pm",
-    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
-    "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-06-30T19:00:00-06:00"
+    "local": "Necaxa",           "localLogo": "/logos/necaxa.png",
+    "visitante": "Atlante",      "visitanteLogo": "/logos/atlante.png",
+    "horario": "Jueves 16 julio 7 pm",
+    "televisora": "TV Azteca",
+    "televisionLogo": "/logos/tv-azteca.png",
+    "kickoff": "2026-07-16T19:00:00-06:00"
   },
   {
     "id": 1,
-    "local": "Inglaterra",       "localLogo": "/logos/inglaterra.png",
-    "visitante": "Congo",        "visitanteLogo": "/logos/congo.png",
-    "horario": "Miércoles 1 julio 10 am",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-07-01T10:00:00-06:00"
+    "local": "Tijuana", "localLogo": "/logos/tijuana.png",
+    "visitante": "Tigres", "visitanteLogo": "/logos/tigres.png",
+    "horario": "Jueves 16 julio 9 pm",
+    "televisora": "TV Azteca",
+    "televisionLogo": "/logos/fox-sports.png",
+    "kickoff": "2026-07-16T21:00:00-06:00"
   },
   {
     "id": 2,
-    "local": "Belgica",          "localLogo": "/logos/belgica.png",
-    "visitante": "Senegal",      "visitanteLogo": "/logos/senegal.png",
-    "horario": "Miércoles 1 julio 2 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-07-01T14:00:00-06:00"
+    "local": "San Luis", "localLogo": "/logos/san-luis.png",
+    "visitante": "Cruz Azul", "visitanteLogo": "/logos/cruz-azul.png",
+    "horario": "Viernes 17 julio 7 pm",
+    "televisora": "FOX Sports",
+    "televisionLogo": "/logos/espn.png",
+    "kickoff": "2026-07-17T19:00:00-06:00"
   },
   {
     "id": 3,
-    "local": "Eua",              "localLogo": "/logos/eua.png",
-    "visitante": "Bosnia",       "visitanteLogo": "/logos/bosnia.png",
-    "horario": "Miércoles 1 julio 6 pm",
-    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
-    "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-07-01T18:00:00-06:00"
+    "local": "León", "localLogo": "/logos/leon.png",
+    "visitante": "Atlas", "visitanteLogo": "/logos/atlas.png",
+    "horario": "Viernes 17 julio 7 pm",
+    "televisora": "FOX Sports / ViX",
+    "televisionLogo": "/logos/vix.png",
+    "kickoff": "2026-07-17T19:00:00-06:00"
   },
   {
     "id": 4,
-    "local": "España",           "localLogo": "/logos/españa.png",
-    "visitante": "Austria",      "visitanteLogo": "/logos/austria.png",
-    "horario": "Jueves 2 julio 1 pm",
-    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
-    "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-07-02T13:00:00-06:00"
+    "local": "FC Juárez", "localLogo": "/logos/juarez.png",
+    "visitante": "Puebla", "visitanteLogo": "/logos/puebla.png",
+    "horario": "Viernes 17 julio 9 pm",
+    "televisora": "TV Azteca",
+    "televisionLogo": "/logos/tv-azteca.png",
+    "kickoff": "2026-07-17T21:00:00-06:00"
   },
   {
     "id": 5,
-    "local": "Portugal",         "localLogo": "/logos/portugal.png",
-    "visitante": "Croacia",      "visitanteLogo": "/logos/croacia.png",
-    "horario": "Jueves 2 julio 5 pm",
-    "televisora": "Azteca 7 / ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-07-02T17:00:00-06:00"
+    "local": "Pumas", "localLogo": "/logos/pumas.png",
+    "visitante": "Pachuca", "visitanteLogo": "/logos/pachuca.png",
+    "horario": "Sábado 18 julio 5 pm",
+    "televisora": "Canal 5 / TUDN / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-07-18T17:00:00-06:00"
   },
   {
     "id": 6,
-    "local": "Suiza",            "localLogo": "/logos/suiza.png",
-    "visitante": "Argelia",      "visitanteLogo": "/logos/argelia.png",
-    "horario": "Jueves 2 julio 9 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-07-02T21:00:00-06:00"
+    "local": "Monterrey", "localLogo": "/logos/monterrey.png",
+    "visitante": "Santos", "visitanteLogo": "/logos/santos.png",
+    "horario": "Sábado 18 julio 7 pm",
+    "televisora": "Canal 5 / TUDN / ViX",
+    "televisionLogo": "/logos/canal-5.png",
+    "kickoff": "2026-07-18T19:00:00-06:00"
   },
   {
     "id": 7,
-    "local": "Argentina",        "localLogo": "/logos/argentina.png",
-    "visitante": "Cabo Verde",   "visitanteLogo": "/logos/cabo-verde.png",
-    "horario": "Viernes 3 julio 4 pm",
-    "televisora": "Canal 5 / Azteca 7 / TUDN / ViX",
-    "televisionLogo": "/logos/canal-5.png",
-    "kickoff": "2026-07-03T16:00:00-06:00"
+    "local": "Chivas", "localLogo": "/logos/chivas.png",
+    "visitante": "Toluca", "visitanteLogo": "/logos/toluca.png",
+    "horario": "Sábado 18 julio 7:07 pm",
+    "televisora": "Amazon Prime Video / Chivas TV",
+    "televisionLogo": "/logos/amazon-prime.png",
+    "kickoff": "2026-07-18T19:07:00-06:00"
   },
   {
     "id": 8,
-    "local": "Colombia",         "localLogo": "/logos/colombia.png",
-    "visitante": "Ghana",        "visitanteLogo": "/logos/ghana.png",
-    "horario": "Viernes 3 julio 7:30 pm",
-    "televisora": "ViX",
-    "televisionLogo": "/logos/vix.png",
-    "kickoff": "2026-07-03T19:30:00-06:00"
+    "local": "Querétaro", "localLogo": "/logos/queretaro.png",
+    "visitante": "América", "visitanteLogo": "/logos/america.png",
+    "horario": "Sábado 18 julio 9 pm",
+    "televisora": "TV Azteca",
+    "televisionLogo": "/logos/tv-azteca.png",
+    "kickoff": "2026-07-18T21:00:00-06:00"
   },
 ]
 _total_especiales = MAX_DOBLES + MAX_TRIPLES
