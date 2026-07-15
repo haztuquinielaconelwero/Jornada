@@ -1016,11 +1016,11 @@ LIMITES_VENDEDORES = {
     "Piny":           (2256, 2260),
     "Dinamica":       (2261, 2265),
     "Vender 1":       (2266, 2315),
+    "Alan Garcia":    (2351, 2400),
     "Kany":           (2401, 2430),
     "Ever":           (2451, 2480),
     "Caro":           (2501, 2525),
 }
-
 def vendedor_es_valido(vendedor: str) -> bool:
     return vendedor in LIMITES_VENDEDORES
 
@@ -1045,6 +1045,7 @@ def obtener_limite_vendedor(vendedor: str) -> int:
 
 # ║     ⚽ Esto de abajo trabaja con los Pines de cada vendedor⚽     ║ # ║     ⚽ Esto de abajo trabaja con los Pines de cada vendedor⚽     ║
 VENDEDOR_PINS = {
+    "Alan Garcia":  "0106",
     "Alexander":    "0229",
     "Alfonso":      "1977",
     "Arturo":       "1423",
@@ -1087,6 +1088,7 @@ VENDEDOR_PINS = {
 
 # ║     ⚽ Esto de abajo trabaja con los WhatsApp de cada vendedor⚽     ║ # ║     ⚽ Esto de abajo trabaja con los WhatsApp de cada vendedor⚽     ║
 VENDEDOR_WHATSAPP = {
+    "Alan Garcia":  "5218284575949",
     "Alexander":    "5218287683709",
     "Alfonso":      "5218186589145",
     "Arturo":       "5218182727993",
@@ -1130,6 +1132,7 @@ VENDEDOR_WHATSAPP = {
 
 # ║     ⚽ Esto de abajo trabaja con los Links de cada vendedor⚽     ║ # ║     ⚽ Esto de abajo trabaja con los Links de cada vendedor⚽     ║
 VENDEDOR_LINKS = {
+    "Alan Garcia":  "https://www.quinielaselwero.com/?vendedor=Alan+Garcia",
     "Alexander":    "https://www.quinielaselwero.com/?vendedor=Alexander",
     "Alfonso":      "https://www.quinielaselwero.com/?vendedor=Alfonso",
     "Arturo":       "https://www.quinielaselwero.com/?vendedor=Arturo",
